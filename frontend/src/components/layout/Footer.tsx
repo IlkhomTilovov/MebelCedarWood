@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom';
 
 const SOCIAL_LINKS = [
-  { label: 'Instagram', href: 'https://instagram.com' },
-  { label: 'Telegram', href: 'https://t.me' },
+  { label: 'Instagram', href: 'https://instagram.com/mebel.cedarwooduz' },
+  { label: 'Telegram', href: 'https://t.me/Hojiakbar0409' },
 ];
 
 export function Footer() {
@@ -37,8 +37,8 @@ export function Footer() {
             <h3 className="text-xs font-semibold tracking-widest text-warm-white uppercase">Aloqa</h3>
             <ul className="mt-4 space-y-2.5 text-sm">
               <li>
-                <a href="tel:+998900000000" className="transition-colors hover:text-warm-white">
-                  +998 90 000 00 00
+                <a href="tel:+998995053707" className="transition-colors hover:text-warm-white">
+                  +998 99 505 37 07
                 </a>
               </li>
               <li>
