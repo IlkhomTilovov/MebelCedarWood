@@ -2,9 +2,28 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/Button';
 import { StepActions } from '@/components/layout/StepActions';
-import { FURNITURE_STYLES, KITCHEN_SHAPES } from '@/lib/regions';
+import { HOME_STATUS_OPTIONS, MEASUREMENT_TIMING_OPTIONS, READINESS_TIMING_OPTIONS, START_TIMING_OPTIONS } from '@/lib/regions';
+import type { FurnitureCategory } from '@/lib/types';
 import { useApplicationStore } from '@/store/useApplicationStore';
 import { useConsentStore } from '@/store/useConsentStore';
+
+const CATEGORY_LABELS: Record<FurnitureCategory, string> = {
+  kitchen: 'Oshxona mebeli',
+  wardrobe: 'Garderob / Shkaf',
+  'living-room': 'Mehmonxona mebeli',
+  bedroom: 'Yotoqxona mebeli',
+  office: 'Ofis mebeli',
+  custom: 'Boshqa (individual loyiha)',
+};
+
+function CheckCircleIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
+      <circle cx="12" cy="12" r="9" />
+      <path d="m8.5 12.5 2.3 2.3 4.7-5.1" />
+    </svg>
+  );
+}
 
 function ReviewRow({ label, value }: { label: string; value: string }) {
   if (!value) return null;
@@ -18,12 +37,19 @@ function ReviewRow({ label, value }: { label: string; value: string }) {
 
 export function StepReview() {
   const navigate = useNavigate();
-  const { personalInfo, kitchenInfo, orderRequirements, prevStep, submit, isSubmitting } = useApplicationStore();
+  const { personalInfo, furnitureCategories, orderRequirements, prevStep, submit, isSubmitting } = useApplicationStore();
   const { contractVersion, consentDate } = useConsentStore();
   const [submitError, setSubmitError] = useState('');
 
-  const shapeLabel = KITCHEN_SHAPES.find((s) => s.value === kitchenInfo.kitchenShape)?.label ?? '';
-  const styleLabel = FURNITURE_STYLES.find((s) => s.value === kitchenInfo.style)?.label ?? '';
+  const categoryLabel = furnitureCategories.map((c) => CATEGORY_LABELS[c]).join(', ');
+  const homeStatusLabel = HOME_STATUS_OPTIONS.find((o) => o.value === orderRequirements.homeStatus)?.label ?? '';
+  const measurementTimingLabel =
+    MEASUREMENT_TIMING_OPTIONS.find((o) => o.value === orderRequirements.measurementTiming)?.label ?? '';
+  const readinessTimingLabel =
+    orderRequirements.readinessTiming === 'specific-date'
+      ? orderRequirements.specificReadinessDate
+      : (READINESS_TIMING_OPTIONS.find((o) => o.value === orderRequirements.readinessTiming)?.label ?? '');
+  const startTimingLabel = START_TIMING_OPTIONS.find((o) => o.value === orderRequirements.startTiming)?.label ?? '';
 
   const handleSubmit = async () => {
     setSubmitError('');
@@ -36,8 +62,16 @@ export function StepReview() {
   };
 
   return (
-    <div className="space-y-8">
-      <h2 className="font-heading text-lg font-semibold text-charcoal">Yakuniy tekshiruv</h2>
+    <div className="relative space-y-8">
+      <div className="flex items-start gap-4">
+        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gold/15 text-gold">
+          <CheckCircleIcon />
+        </span>
+        <div>
+          <h2 className="font-heading text-xl font-bold text-charcoal">Yakuniy tekshiruv</h2>
+          <p className="mt-1 text-sm text-charcoal/60">Barcha ma'lumotlarni tekshirib, arizani yuboring.</p>
+        </div>
+      </div>
 
       <div>
         <h3 className="mb-2 text-xs font-semibold tracking-widest text-gold uppercase">Shaxsiy ma'lumotlar</h3>
@@ -49,21 +83,17 @@ export function StepReview() {
       </div>
 
       <div>
-        <h3 className="mb-2 text-xs font-semibold tracking-widest text-gold uppercase">Oshxona ma'lumotlari</h3>
-        <ReviewRow label="Manzil" value={kitchenInfo.address} />
-        <ReviewRow label="Uzunligi" value={kitchenInfo.kitchenSize} />
-        <ReviewRow label="Shakli" value={shapeLabel} />
-        <ReviewRow label="Uslub" value={styleLabel} />
-        <ReviewRow label="Material" value={kitchenInfo.materialPreference} />
-        <ReviewRow label="Izoh" value={kitchenInfo.comment} />
+        <h3 className="mb-2 text-xs font-semibold tracking-widest text-gold uppercase">Buyurtma turi</h3>
+        <ReviewRow label="Mebel turlari" value={categoryLabel} />
       </div>
 
       <div>
-        <h3 className="mb-2 text-xs font-semibold tracking-widest text-gold uppercase">Buyurtma talablari</h3>
-        <ReviewRow label="Budjet" value={orderRequirements.budget} />
-        <ReviewRow label="Muddat" value={orderRequirements.plannedDate} />
-        <ReviewRow label="Qo'shimcha talablar" value={orderRequirements.additionalRequirements} />
-        <ReviewRow label="Yuklangan rasmlar" value={orderRequirements.photoNames.join(', ')} />
+        <h3 className="mb-2 text-xs font-semibold tracking-widest text-gold uppercase">Loyiha rejalari</h3>
+        <ReviewRow label="Uy holati" value={homeStatusLabel} />
+        <ReviewRow label="O'lchov uchun" value={measurementTimingLabel} />
+        <ReviewRow label="Tayyor bo'lish muddati" value={readinessTimingLabel} />
+        <ReviewRow label="Loyihani boshlash" value={startTimingLabel} />
+        <ReviewRow label="Qo'shimcha ma'lumot" value={orderRequirements.additionalNotes} />
       </div>
 
       <div>

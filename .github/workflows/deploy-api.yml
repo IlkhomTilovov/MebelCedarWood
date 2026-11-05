@@ -1,0 +1,107 @@
+name: Deploy CEDAR WOOD API
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'backend/cedarwood-api/**'
+      - '.github/workflows/deploy-api.yml'
+  workflow_dispatch: {}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up SSH agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.VPS_SSH_KEY }}
+
+      - name: Trust host key
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Sync application files
+        run: |
+          rsync -az --delete \
+            --exclude 'node_modules' \
+            --exclude '.env' \
+            --exclude 'counter.json' \
+            backend/cedarwood-api/ \
+            root@${{ secrets.VPS_HOST }}:/opt/cedarwood-api/
+
+      - name: Install dependencies and configure service
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          CHAT_ID: ${{ secrets.CHAT_ID }}
+        run: |
+          ssh root@${{ secrets.VPS_HOST }} "BOT_TOKEN='${BOT_TOKEN}' CHAT_ID='${CHAT_ID}' bash -s" <<'REMOTE_SCRIPT'
+          set -euo pipefail
+
+          id cedarwood >/dev/null 2>&1 || useradd -r -M -s /usr/sbin/nologin cedarwood
+
+          cat > /opt/cedarwood-api/.env <<EOF
+          BOT_TOKEN=${BOT_TOKEN}
+          CHAT_ID=${CHAT_ID}
+          PORT=4100
+          EOF
+          chmod 600 /opt/cedarwood-api/.env
+          chown -R cedarwood:cedarwood /opt/cedarwood-api
+
+          cd /opt/cedarwood-api
+          npm ci --omit=dev --no-audit --no-fund
+
+          cat > /etc/systemd/system/cedarwood-api.service <<'EOF'
+          [Unit]
+          Description=CEDAR WOOD application API (Telegram notifier)
+          After=network.target
+
+          [Service]
+          Type=simple
+          User=cedarwood
+          WorkingDirectory=/opt/cedarwood-api
+          EnvironmentFile=/opt/cedarwood-api/.env
+          ExecStart=/usr/bin/node /opt/cedarwood-api/index.js
+          Restart=on-failure
+          RestartSec=5
+          NoNewPrivileges=true
+          PrivateTmp=true
+
+          [Install]
+          WantedBy=multi-user.target
+          EOF
+
+          cat > /etc/nginx/sites-available/cedarwood-api <<'EOF'
+          server {
+              listen 80;
+              server_name _;
+
+              location /api/ {
+                  proxy_pass http://127.0.0.1:4100;
+                  proxy_http_version 1.1;
+                  proxy_set_header Host $host;
+                  proxy_set_header X-Real-IP $remote_addr;
+                  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                  proxy_set_header X-Forwarded-Proto $scheme;
+              }
+          }
+          EOF
+          ln -sf /etc/nginx/sites-available/cedarwood-api /etc/nginx/sites-enabled/cedarwood-api
+          nginx -t
+          systemctl reload nginx
+
+          systemctl daemon-reload
+          systemctl enable cedarwood-api
+          systemctl restart cedarwood-api
+          sleep 1
+          systemctl is-active cedarwood-api
+          REMOTE_SCRIPT
+
+      - name: Health check
+        run: |
+          sleep 2
+          curl -fsS "http://${{ secrets.VPS_HOST }}/api/health"

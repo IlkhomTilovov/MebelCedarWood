@@ -1,4 +1,3 @@
-import { generateApplicationNumber } from '@/lib/applicationId';
 import type { ApplicationFormData, SubmittedApplication } from '@/lib/types';
 
 export interface ConsentPayload {
@@ -13,16 +12,20 @@ export interface ApplicationSubmission {
   consent: ConsentPayload;
 }
 
-// MOCK implementation for the frontend-only phase (1-bosqich).
-// 2-bosqichda bu funksiya backend'dagi POST /api/applications chaqirig'iga
-// almashtiriladi — chaqiruvchi tomon (store) o'zgarmaydi, faqat shu funksiya ichi.
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://194.99.21.44';
+
 export async function submitApplication(
   submission: ApplicationSubmission,
 ): Promise<SubmittedApplication> {
-  void submission;
-  await new Promise((resolve) => setTimeout(resolve, 400));
-  return {
-    applicationNumber: generateApplicationNumber(),
-    submittedAt: new Date().toISOString(),
-  };
+  const response = await fetch(`${API_BASE_URL}/api/applications`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(submission),
+  });
+
+  if (!response.ok) {
+    throw new Error('Arizani yuborishda xatolik yuz berdi');
+  }
+
+  return response.json();
 }

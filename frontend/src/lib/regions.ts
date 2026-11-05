@@ -15,16 +15,34 @@ export const UZBEKISTAN_REGIONS = [
   "Qoraqalpog'iston Respublikasi",
 ] as const;
 
-export const KITCHEN_SHAPES = [
-  { value: 'straight', label: "To'g'ri" },
-  { value: 'l-shape', label: 'L-shakl' },
-  { value: 'u-shape', label: 'U-shakl' },
+export const HOME_STATUS_OPTIONS = [
+  { value: 'repaired', label: "Ta'mir tugagan" },
+  { value: 'in-progress', label: "Ta'mir jarayonida" },
+  { value: 'not-started', label: "Ta'mir hali boshlanmagan" },
+  { value: 'new-home', label: 'Yangi uy' },
   { value: 'other', label: 'Boshqa' },
 ] as const;
 
-export const FURNITURE_STYLES = [
-  { value: 'modern', label: 'Modern' },
-  { value: 'minimalist', label: 'Minimalist' },
-  { value: 'classic', label: 'Classic' },
-  { value: 'other', label: 'Boshqa' },
+export const MEASUREMENT_TIMING_OPTIONS = [
+  { value: 'today', label: 'Bugun' },
+  { value: 'tomorrow', label: 'Ertaga' },
+  { value: 'this-week', label: 'Shu hafta' },
+  { value: 'next-week', label: 'Keyingi hafta' },
+  { value: 'schedule-later', label: 'Vaqtni kelishamiz' },
+] as const;
+
+export const READINESS_TIMING_OPTIONS = [
+  { value: '1-2-weeks', label: '1–2 hafta ichida' },
+  { value: '2-3-weeks', label: '2–3 hafta ichida' },
+  { value: '1-month', label: '1 oy ichida' },
+  { value: '1-2-months', label: '1–2 oy ichida' },
+  { value: 'specific-date', label: 'Aniq muddatim bor' },
+] as const;
+
+export const START_TIMING_OPTIONS = [
+  { value: 'asap', label: 'Imkon qadar tezroq' },
+  { value: 'this-week', label: 'Shu hafta' },
+  { value: 'next-week', label: 'Keyingi hafta' },
+  { value: 'next-month', label: 'Keyingi oy' },
+  { value: 'schedule-later', label: 'Vaqtni kelishamiz' },
 ] as const;

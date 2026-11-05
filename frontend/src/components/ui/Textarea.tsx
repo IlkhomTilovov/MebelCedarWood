@@ -13,7 +13,7 @@ export function Textarea({ label, error, id, className = '', ...props }: Textare
       <textarea
         id={textareaId}
         rows={4}
-        className={`border px-4 py-3 text-base text-charcoal outline-none transition-colors focus:border-gold ${
+        className={`rounded-lg border px-4 py-3 text-base text-charcoal outline-none transition-colors focus:border-gold ${
           error ? 'border-red-400' : 'border-light-gray'
         } ${className}`}
         {...props}

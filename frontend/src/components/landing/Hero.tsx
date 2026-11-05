@@ -73,7 +73,7 @@ export function Hero() {
             to="/contract"
             className="inline-flex items-center justify-center rounded-lg bg-gold px-8 py-4 text-sm font-semibold tracking-wide text-charcoal uppercase transition-colors hover:bg-[#a68a56]"
           >
-            Loyihani boshlash
+            Shartnomani ko'rib chiqish
           </Link>
         </div>
       </div>

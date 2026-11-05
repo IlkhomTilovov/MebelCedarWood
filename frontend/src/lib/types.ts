@@ -1,6 +1,12 @@
-export type KitchenShape = 'straight' | 'l-shape' | 'u-shape' | 'other';
+export type FurnitureCategory = 'kitchen' | 'wardrobe' | 'living-room' | 'bedroom' | 'office' | 'custom';
 
-export type FurnitureStyle = 'modern' | 'minimalist' | 'classic' | 'other';
+export type HomeStatus = 'repaired' | 'in-progress' | 'not-started' | 'new-home' | 'other';
+
+export type MeasurementTiming = 'today' | 'tomorrow' | 'this-week' | 'next-week' | 'schedule-later';
+
+export type ReadinessTiming = '1-2-weeks' | '2-3-weeks' | '1-month' | '1-2-months' | 'specific-date';
+
+export type StartTiming = 'asap' | 'this-week' | 'next-week' | 'next-month' | 'schedule-later';
 
 export interface PersonalInfo {
   fullName: string;
@@ -10,25 +16,18 @@ export interface PersonalInfo {
   district: string;
 }
 
-export interface KitchenInfo {
-  address: string;
-  kitchenSize: string;
-  kitchenShape: KitchenShape;
-  style: FurnitureStyle;
-  materialPreference: string;
-  comment: string;
-}
-
 export interface OrderRequirements {
-  budget: string;
-  plannedDate: string;
-  additionalRequirements: string;
-  photoNames: string[];
+  homeStatus: HomeStatus;
+  measurementTiming: MeasurementTiming;
+  readinessTiming: ReadinessTiming;
+  specificReadinessDate: string;
+  startTiming: StartTiming;
+  additionalNotes: string;
 }
 
 export interface ApplicationFormData {
   personalInfo: PersonalInfo;
-  kitchenInfo: KitchenInfo;
+  furnitureCategories: FurnitureCategory[];
   orderRequirements: OrderRequirements;
 }
 

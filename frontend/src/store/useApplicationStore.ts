@@ -4,7 +4,7 @@ import { submitApplication as submitApplicationRequest } from '@/lib/api';
 import { CONSENT_TEXT } from '@/lib/contract';
 import type {
   ApplicationFormData,
-  KitchenInfo,
+  FurnitureCategory,
   OrderRequirements,
   PersonalInfo,
   SubmittedApplication,
@@ -19,34 +19,25 @@ const emptyPersonalInfo: PersonalInfo = {
   district: '',
 };
 
-const emptyKitchenInfo: KitchenInfo = {
-  address: '',
-  kitchenSize: '',
-  kitchenShape: 'straight',
-  style: 'modern',
-  materialPreference: '',
-  comment: '',
-};
-
 const emptyOrderRequirements: OrderRequirements = {
-  budget: '',
-  plannedDate: '',
-  additionalRequirements: '',
-  photoNames: [],
+  homeStatus: 'repaired',
+  measurementTiming: 'today',
+  readinessTiming: '1-2-weeks',
+  specificReadinessDate: '',
+  startTiming: 'asap',
+  additionalNotes: '',
 };
 
 interface ApplicationState {
   currentStep: number;
   personalInfo: PersonalInfo;
-  kitchenInfo: KitchenInfo;
+  furnitureCategories: FurnitureCategory[];
   orderRequirements: OrderRequirements;
-  photos: File[];
   submittedApplication: SubmittedApplication | null;
   isSubmitting: boolean;
   setPersonalInfo: (data: PersonalInfo) => void;
-  setKitchenInfo: (data: KitchenInfo) => void;
+  setFurnitureCategories: (values: FurnitureCategory[]) => void;
   setOrderRequirements: (data: OrderRequirements) => void;
-  setPhotos: (files: File[]) => void;
   goToStep: (step: number) => void;
   nextStep: () => void;
   prevStep: () => void;
@@ -59,19 +50,13 @@ export const useApplicationStore = create<ApplicationState>()(
     (set, get) => ({
       currentStep: 1,
       personalInfo: emptyPersonalInfo,
-      kitchenInfo: emptyKitchenInfo,
+      furnitureCategories: [],
       orderRequirements: emptyOrderRequirements,
-      photos: [],
       submittedApplication: null,
       isSubmitting: false,
       setPersonalInfo: (data) => set({ personalInfo: data }),
-      setKitchenInfo: (data) => set({ kitchenInfo: data }),
+      setFurnitureCategories: (values) => set({ furnitureCategories: values }),
       setOrderRequirements: (data) => set({ orderRequirements: data }),
-      setPhotos: (files) =>
-        set({
-          photos: files,
-          orderRequirements: { ...get().orderRequirements, photoNames: files.map((f) => f.name) },
-        }),
       goToStep: (step) => set({ currentStep: Math.min(Math.max(step, 1), 4) }),
       nextStep: () => set({ currentStep: Math.min(get().currentStep + 1, 4) }),
       prevStep: () => set({ currentStep: Math.max(get().currentStep - 1, 1) }),
@@ -80,7 +65,7 @@ export const useApplicationStore = create<ApplicationState>()(
         const consent = useConsentStore.getState();
         const form: ApplicationFormData = {
           personalInfo: get().personalInfo,
-          kitchenInfo: get().kitchenInfo,
+          furnitureCategories: get().furnitureCategories,
           orderRequirements: get().orderRequirements,
         };
         try {
@@ -103,9 +88,8 @@ export const useApplicationStore = create<ApplicationState>()(
         set({
           currentStep: 1,
           personalInfo: emptyPersonalInfo,
-          kitchenInfo: emptyKitchenInfo,
+          furnitureCategories: [],
           orderRequirements: emptyOrderRequirements,
-          photos: [],
           submittedApplication: null,
           isSubmitting: false,
         }),
@@ -115,7 +99,7 @@ export const useApplicationStore = create<ApplicationState>()(
       partialize: (state) => ({
         currentStep: state.currentStep,
         personalInfo: state.personalInfo,
-        kitchenInfo: state.kitchenInfo,
+        furnitureCategories: state.furnitureCategories,
         orderRequirements: state.orderRequirements,
         submittedApplication: state.submittedApplication,
       }),

@@ -26,7 +26,7 @@ export function CtaBand() {
           </div>
           <Link
             to="/contract"
-            className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-warm-white/40 px-6 py-3.5 text-xs font-semibold tracking-wide text-warm-white uppercase transition-colors hover:border-warm-white sm:w-auto"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-gold px-6 py-3.5 text-xs font-semibold tracking-wide text-charcoal uppercase transition-colors hover:bg-[#a68a56] sm:w-auto"
           >
             Shartnomani ko'rib chiqish
             <span aria-hidden="true">→</span>
