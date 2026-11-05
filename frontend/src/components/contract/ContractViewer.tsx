@@ -209,7 +209,7 @@ export function ContractViewer({ onReachEnd }: ContractViewerProps) {
         </div>
       </div>
 
-      <div className="max-h-[65dvh] overflow-y-auto px-4 py-6 [-webkit-overflow-scrolling:touch] sm:max-h-[60vh] sm:px-8 sm:py-8">
+      <div className="px-4 py-6 sm:px-8 sm:py-8">
         <div className="mb-6 flex items-start gap-4 rounded-xl bg-gold/10 p-5">
           <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gold text-charcoal">
             <ShieldAlertIcon className="h-5 w-5" />
