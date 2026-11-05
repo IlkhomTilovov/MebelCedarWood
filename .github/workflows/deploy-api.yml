@@ -25,10 +25,15 @@ jobs:
           mkdir -p ~/.ssh
           ssh-keyscan -H "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts
 
+      - name: Diagnose plain exec
+        run: |
+          echo "host-len-check:[${{ secrets.VPS_HOST }}]"
+          ssh -v -o BatchMode=yes "root@${{ secrets.VPS_HOST }}" echo PROBE_OK
+
       - name: Sync application files
         env:
           REMOTE_CMD: "mkdir -p /opt/cedarwood-api && tar -xzf - -C /opt/cedarwood-api"
-        run: tar -czf - -C backend/cedarwood-api --exclude=node_modules --exclude=.env --exclude=counter.json . | ssh -o ConnectTimeout=20 -o BatchMode=yes root@${{ secrets.VPS_HOST }} "$REMOTE_CMD"
+        run: tar -czf - -C backend/cedarwood-api --exclude=node_modules --exclude=.env --exclude=counter.json . | ssh -v -o ConnectTimeout=20 -o BatchMode=yes "root@${{ secrets.VPS_HOST }}" "$REMOTE_CMD"
 
       - name: Install dependencies and configure service
         env:
