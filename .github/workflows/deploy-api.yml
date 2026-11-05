@@ -27,12 +27,10 @@ jobs:
 
       - name: Sync application files
         run: |
-          rsync -az --delete \
-            --exclude 'node_modules' \
-            --exclude '.env' \
-            --exclude 'counter.json' \
-            backend/cedarwood-api/ \
-            root@${{ secrets.VPS_HOST }}:/opt/cedarwood-api/
+          ssh root@${{ secrets.VPS_HOST }} "mkdir -p /opt/cedarwood-api"
+          tar -czf - -C backend/cedarwood-api \
+            --exclude='node_modules' --exclude='.env' --exclude='counter.json' . \
+            | ssh root@${{ secrets.VPS_HOST }} "tar -xzf - -C /opt/cedarwood-api"
 
       - name: Install dependencies and configure service
         env:
