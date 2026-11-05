@@ -12,7 +12,7 @@ export interface ApplicationSubmission {
   consent: ConsentPayload;
 }
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://194.99.21.44';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'https://api.mebel.com.uz';
 
 export async function submitApplication(
   submission: ApplicationSubmission,

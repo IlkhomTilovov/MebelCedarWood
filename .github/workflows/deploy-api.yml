@@ -82,7 +82,7 @@ jobs:
           cat > /etc/nginx/sites-available/cedarwood-api <<'EOF'
           server {
               listen 80;
-              server_name _;
+              server_name api.mebel.com.uz;
 
               location /api/ {
                   proxy_pass http://127.0.0.1:4100;
@@ -106,8 +106,6 @@ jobs:
           REMOTE_SCRIPT
 
       - name: Health check
-        env:
-          VPS_HOST: ${{ steps.host.outputs.value }}
         run: |
           sleep 2
-          curl -fsS "http://$VPS_HOST/api/health"
+          curl -fsS "https://api.mebel.com.uz/api/health"
