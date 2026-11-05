@@ -15,6 +15,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Normalize host secret
+        id: host
+        run: |
+          value=$(printf '%s' "${{ secrets.VPS_HOST }}" | tr -d '[:space:]')
+          echo "value=$value" >> "$GITHUB_OUTPUT"
+
       - name: Set up SSH agent
         uses: webfactory/ssh-agent@v0.9.0
         with:
@@ -23,24 +29,21 @@ jobs:
       - name: Trust host key
         run: |
           mkdir -p ~/.ssh
-          ssh-keyscan -H "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts
-
-      - name: Diagnose plain exec
-        run: |
-          echo "host-len-check:[${{ secrets.VPS_HOST }}]"
-          ssh -v -o BatchMode=yes "root@${{ secrets.VPS_HOST }}" echo PROBE_OK
+          ssh-keyscan -H "${{ steps.host.outputs.value }}" >> ~/.ssh/known_hosts
 
       - name: Sync application files
         env:
           REMOTE_CMD: "mkdir -p /opt/cedarwood-api && tar -xzf - -C /opt/cedarwood-api"
-        run: tar -czf - -C backend/cedarwood-api --exclude=node_modules --exclude=.env --exclude=counter.json . | ssh -v -o ConnectTimeout=20 -o BatchMode=yes "root@${{ secrets.VPS_HOST }}" "$REMOTE_CMD"
+          VPS_HOST: ${{ steps.host.outputs.value }}
+        run: tar -czf - -C backend/cedarwood-api --exclude=node_modules --exclude=.env --exclude=counter.json . | ssh -o ConnectTimeout=20 -o BatchMode=yes "root@$VPS_HOST" "$REMOTE_CMD"
 
       - name: Install dependencies and configure service
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           CHAT_ID: ${{ secrets.CHAT_ID }}
+          VPS_HOST: ${{ steps.host.outputs.value }}
         run: |
-          ssh root@${{ secrets.VPS_HOST }} "BOT_TOKEN='${BOT_TOKEN}' CHAT_ID='${CHAT_ID}' bash -s" <<'REMOTE_SCRIPT'
+          ssh "root@$VPS_HOST" "BOT_TOKEN='${BOT_TOKEN}' CHAT_ID='${CHAT_ID}' bash -s" <<'REMOTE_SCRIPT'
           set -euo pipefail
 
           id cedarwood >/dev/null 2>&1 || useradd -r -M -s /usr/sbin/nologin cedarwood
@@ -103,6 +106,8 @@ jobs:
           REMOTE_SCRIPT
 
       - name: Health check
+        env:
+          VPS_HOST: ${{ steps.host.outputs.value }}
         run: |
           sleep 2
-          curl -fsS "http://${{ secrets.VPS_HOST }}/api/health"
+          curl -fsS "http://$VPS_HOST/api/health"
