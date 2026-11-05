@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import headerImage from '@/assets/images/portfolio/kitchen-1.png';
+import headerImage from '@/assets/images/portfolio/kitchen-1.webp';
 import { CONTRACT_SECTIONS, CONTRACT_SUMMARY, CONTRACT_TITLE } from '@/lib/contract';
 
 interface ContractViewerProps {

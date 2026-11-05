@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { ReactNode } from 'react';
 import { useForm } from 'react-hook-form';
-import summaryImage from '@/assets/images/portfolio/kitchen-1.png';
+import summaryImage from '@/assets/images/portfolio/kitchen-1.webp';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';

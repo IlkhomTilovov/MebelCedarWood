@@ -1,5 +1,5 @@
 import { Navigate } from 'react-router-dom';
-import formHeaderImage from '@/assets/images/portfolio/kitchen-1.png';
+import formHeaderImage from '@/assets/images/portfolio/kitchen-1.webp';
 import { ProgressIndicator } from '@/components/layout/ProgressIndicator';
 import { StepFurnitureType } from '@/components/form/StepFurnitureType';
 import { StepOrderRequirements } from '@/components/form/StepOrderRequirements';

@@ -1,7 +1,7 @@
-import blueprintSketchImage from '@/assets/images/whyus/blueprint-sketch-1.png';
-import calendarDeskImage from '@/assets/images/whyus/calendar-desk-1.png';
-import materialSamplesImage from '@/assets/images/whyus/material-samples-1.png';
-import contractDeskImage from '@/assets/images/whyus/contract-desk-1.png';
+import blueprintSketchImage from '@/assets/images/whyus/blueprint-sketch-1.webp';
+import calendarDeskImage from '@/assets/images/whyus/calendar-desk-1.webp';
+import materialSamplesImage from '@/assets/images/whyus/material-samples-1.webp';
+import contractDeskImage from '@/assets/images/whyus/contract-desk-1.webp';
 
 function HandshakeIcon() {
   return (

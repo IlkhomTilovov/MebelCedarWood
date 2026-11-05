@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import ctaImage from '@/assets/images/cta/cta-armchair-1.png';
+import ctaImage from '@/assets/images/cta/cta-armchair-1.webp';
 
 function DocumentIcon() {
   return (

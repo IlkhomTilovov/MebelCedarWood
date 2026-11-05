@@ -1,5 +1,5 @@
 import { ImagePlaceholder } from '@/components/ui/ImagePlaceholder';
-import workshopImage from '@/assets/images/about/workshop-cnc-1.png';
+import workshopImage from '@/assets/images/about/workshop-cnc-1.webp';
 
 const points = [
   "Individual o'lchov va loyihalash",

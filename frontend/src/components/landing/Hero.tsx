@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
-import heroImage from '@/assets/images/hero/hero-kitchen-2.png';
-import heroImageMobile from '@/assets/images/hero/hero-kitchen-mobile-1.png';
+import heroImage from '@/assets/images/hero/hero-kitchen-2.webp';
+import heroImageMobile from '@/assets/images/hero/hero-kitchen-mobile-1.webp';
 
 function ShieldIcon() {
   return (

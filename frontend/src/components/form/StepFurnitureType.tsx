@@ -1,10 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import bedroomImage from '@/assets/images/portfolio/bedroom-1.png';
-import kitchenImage from '@/assets/images/portfolio/kitchen-1.png';
-import livingRoomImage from '@/assets/images/portfolio/livingroom-1.png';
-import officeImage from '@/assets/images/portfolio/office-1.png';
-import wardrobeImage from '@/assets/images/portfolio/wardrobe-1.png';
+import bedroomImage from '@/assets/images/portfolio/bedroom-1.webp';
+import kitchenImage from '@/assets/images/portfolio/kitchen-1.webp';
+import livingRoomImage from '@/assets/images/portfolio/livingroom-1.webp';
+import officeImage from '@/assets/images/portfolio/office-1.webp';
+import wardrobeImage from '@/assets/images/portfolio/wardrobe-1.webp';
 import { Button } from '@/components/ui/Button';
 import { StepActions } from '@/components/layout/StepActions';
 import { furnitureCategorySchema, type FurnitureCategoryInput } from '@/lib/validation';

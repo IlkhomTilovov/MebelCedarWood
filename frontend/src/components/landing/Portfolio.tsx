@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { ImagePlaceholder } from '@/components/ui/ImagePlaceholder';
-import bedroomImage from '@/assets/images/portfolio/bedroom-1.png';
-import kitchenImage from '@/assets/images/portfolio/kitchen-1.png';
-import livingRoomImage from '@/assets/images/portfolio/livingroom-1.png';
-import officeImage from '@/assets/images/portfolio/office-1.png';
-import portfolioBgImage from '@/assets/images/portfolio/portfolio-bg-1.png';
+import bedroomImage from '@/assets/images/portfolio/bedroom-1.webp';
+import kitchenImage from '@/assets/images/portfolio/kitchen-1.webp';
+import livingRoomImage from '@/assets/images/portfolio/livingroom-1.webp';
+import officeImage from '@/assets/images/portfolio/office-1.webp';
+import portfolioBgImage from '@/assets/images/portfolio/portfolio-bg-1.webp';
 
 type RoomCategory = 'Oshxona' | 'Yotoqxona' | 'Mehmonxona' | 'Ofis' | 'Garderob' | 'Tijorat';
 

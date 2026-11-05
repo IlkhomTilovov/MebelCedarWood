@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import signatureImage from '@/assets/images/process/step-ariza-1.png';
+import signatureImage from '@/assets/images/process/step-ariza-1.webp';
 import { Checkbox } from '@/components/ui/Checkbox';
 import { CONSENT_TEXT } from '@/lib/contract';
 

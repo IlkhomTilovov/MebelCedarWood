@@ -1,8 +1,8 @@
-import stepArizaImage from '@/assets/images/process/step-ariza-1.png';
-import stepIshlabChiqarishImage from '@/assets/images/process/step-ishlab-chiqarish-1.png';
-import stepLoyihalashImage from '@/assets/images/process/step-loyihalash-1.png';
-import stepOlchovImage from '@/assets/images/process/step-olchov-1.png';
-import stepOrnatishImage from '@/assets/images/process/step-ornatish-1.png';
+import stepArizaImage from '@/assets/images/process/step-ariza-1.webp';
+import stepIshlabChiqarishImage from '@/assets/images/process/step-ishlab-chiqarish-1.webp';
+import stepLoyihalashImage from '@/assets/images/process/step-loyihalash-1.webp';
+import stepOlchovImage from '@/assets/images/process/step-olchov-1.webp';
+import stepOrnatishImage from '@/assets/images/process/step-ornatish-1.webp';
 
 interface IconProps {
   className?: string;

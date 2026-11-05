@@ -1,4 +1,4 @@
-import guaranteeImage from '@/assets/images/guarantee/guarantee-cabinetry-1.png';
+import guaranteeImage from '@/assets/images/guarantee/guarantee-cabinetry-1.webp';
 
 const points = [
   { value: '1 KUN', label: 'Kechiksak' },
