@@ -42,8 +42,8 @@ export function Footer() {
                 </a>
               </li>
               <li>
-                <a href="mailto:info@cedarwood.uz" className="transition-colors hover:text-warm-white">
-                  info@cedarwood.uz
+                <a href="mailto:info@mebel.com.uz" className="transition-colors hover:text-warm-white">
+                  info@mebel.com.uz
                 </a>
               </li>
               <li>Toshkent sh.</li>

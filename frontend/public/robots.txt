@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /apply
+Disallow: /success
+
+Sitemap: https://mebel.com.uz/sitemap.xml

@@ -1,7 +1,15 @@
 import { Link, Navigate } from 'react-router-dom';
+import { useSeo } from '@/lib/seo';
 import { useApplicationStore } from '@/store/useApplicationStore';
 
 export function SuccessPage() {
+  useSeo({
+    title: 'Ariza qabul qilindi',
+    description: 'Arizangiz muvaffaqiyatli yuborildi.',
+    path: '/success',
+    noindex: true,
+  });
+
   const submittedApplication = useApplicationStore((s) => s.submittedApplication);
 
   if (!submittedApplication) {

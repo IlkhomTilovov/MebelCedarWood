@@ -5,6 +5,7 @@ import { StepFurnitureType } from '@/components/form/StepFurnitureType';
 import { StepOrderRequirements } from '@/components/form/StepOrderRequirements';
 import { StepPersonalInfo } from '@/components/form/StepPersonalInfo';
 import { StepReview } from '@/components/form/StepReview';
+import { useSeo } from '@/lib/seo';
 import { useApplicationStore } from '@/store/useApplicationStore';
 import { useConsentStore } from '@/store/useConsentStore';
 
@@ -26,6 +27,13 @@ const STEPS = [
 ];
 
 export function ApplicationFormPage() {
+  useSeo({
+    title: 'Ariza formasi',
+    description: 'Mebel buyurtma arizasini bosqichma-bosqich to\'ldiring.',
+    path: '/apply',
+    noindex: true,
+  });
+
   const consentGiven = useConsentStore((s) => s.consentGiven);
   const currentStep = useApplicationStore((s) => s.currentStep);
   const submittedApplication = useApplicationStore((s) => s.submittedApplication);
