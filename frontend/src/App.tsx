@@ -25,13 +25,16 @@ const DevicesPage = lazy(() => import('@/admin/pages/DevicesPage').then((m) => (
 const GeographyPage = lazy(() => import('@/admin/pages/GeographyPage').then((m) => ({ default: m.GeographyPage })));
 const ExitPagesPage = lazy(() => import('@/admin/pages/ExitPagesPage').then((m) => ({ default: m.ExitPagesPage })));
 const CatalogPage = lazy(() => import('@/admin/pages/CatalogPage').then((m) => ({ default: m.CatalogPage })));
-const ComingSoonPage = lazy(() => import('@/admin/pages/ComingSoonPage').then((m) => ({ default: m.ComingSoonPage })));
 const AiInsightsPage = lazy(() => import('@/admin/pages/AiInsightsPage').then((m) => ({ default: m.AiInsightsPage })));
 const AiReportsPage = lazy(() => import('@/admin/pages/AiReportsPage').then((m) => ({ default: m.AiReportsPage })));
 const AiChatPage = lazy(() => import('@/admin/pages/AiChatPage').then((m) => ({ default: m.AiChatPage })));
 const AbTestsPage = lazy(() => import('@/admin/pages/AbTestsPage').then((m) => ({ default: m.AbTestsPage })));
 const AdsRoiPage = lazy(() => import('@/admin/pages/AdsRoiPage').then((m) => ({ default: m.AdsRoiPage })));
 const HeatmapPage = lazy(() => import('@/admin/pages/HeatmapPage').then((m) => ({ default: m.HeatmapPage })));
+const RecordingsPage = lazy(() => import('@/admin/pages/RecordingsPage').then((m) => ({ default: m.RecordingsPage })));
+const RecordingReplayPage = lazy(() =>
+  import('@/admin/pages/RecordingReplayPage').then((m) => ({ default: m.RecordingReplayPage })),
+);
 
 function ScrollToTop() {
   const { pathname, hash } = useLocation();
@@ -85,15 +88,8 @@ function App() {
                     <Route path="catalog" element={<CatalogPage />} />
                     <Route path="exits" element={<ExitPagesPage />} />
                     <Route path="heatmaps" element={<HeatmapPage />} />
-                    <Route
-                      path="recordings"
-                      element={
-                        <ComingSoonPage
-                          title="Session Recording"
-                          note="Privacy-friendly session replay keyingi bosqichda qo'shiladi."
-                        />
-                      }
-                    />
+                    <Route path="recordings" element={<RecordingsPage />} />
+                    <Route path="recordings/:recordingId" element={<RecordingReplayPage />} />
                     <Route path="ai-insights" element={<AiInsightsPage />} />
                     <Route path="ai-reports" element={<AiReportsPage />} />
                     <Route path="ai-chat" element={<AiChatPage />} />

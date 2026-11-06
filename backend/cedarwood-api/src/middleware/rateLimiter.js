@@ -8,6 +8,14 @@ export const eventsRateLimiter = rateLimit({
   message: { error: 'rate_limited' },
 });
 
+export const recordingsRateLimiter = rateLimit({
+  windowMs: 60_000,
+  limit: 120,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'rate_limited' },
+});
+
 export const loginRateLimiter = rateLimit({
   windowMs: 15 * 60_000,
   limit: 20,

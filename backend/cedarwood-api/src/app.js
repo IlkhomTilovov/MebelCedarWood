@@ -4,13 +4,15 @@ import cookieParser from 'cookie-parser';
 import { healthRouter } from './routes/health.js';
 import { applicationsRouter } from './routes/applications.js';
 import { eventsRouter } from './routes/events.js';
+import { recordingsRouter } from './routes/recordings.js';
 import { adminAuthRouter } from './routes/admin/auth.js';
 import { adminAnalyticsRouter } from './routes/admin/analytics.js';
 import { adminRealtimeRouter } from './routes/admin/realtime.js';
 import { adminExportRouter } from './routes/admin/export.js';
 import { adminAiRouter } from './routes/admin/ai.js';
 import { adminAdsRouter } from './routes/admin/ads.js';
-import { eventsRateLimiter } from './middleware/rateLimiter.js';
+import { adminRecordingsRouter } from './routes/admin/recordings.js';
+import { eventsRateLimiter, recordingsRateLimiter } from './middleware/rateLimiter.js';
 
 const rawAllowedOrigins = process.env.ALLOWED_ORIGINS?.trim();
 const allowedOrigins = rawAllowedOrigins
@@ -40,6 +42,7 @@ app.use('/api/admin', adminRealtimeRouter);
 app.use('/api/admin', adminExportRouter);
 app.use('/api/admin/ai', adminAiRouter);
 app.use('/api/admin/ads', adminAdsRouter);
+app.use('/api/admin/recordings', adminRecordingsRouter);
 
 // Asosiy sayt (forma, tracking) uchun ochiq CORS — avvalgi xatti-harakat bilan bir xil,
 // shunda mavjud /api/applications oqimi hech qachon buzilmaydi.
@@ -47,6 +50,7 @@ app.use(cors());
 app.use('/api', healthRouter);
 app.use('/api', applicationsRouter);
 app.use('/api', eventsRateLimiter, eventsRouter);
+app.use('/api', recordingsRateLimiter, recordingsRouter);
 
 app.use((err, _req, res, _next) => {
   console.error('Unhandled request error', err);

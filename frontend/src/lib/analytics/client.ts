@@ -137,7 +137,7 @@ function buildSessionMeta(): SessionMeta {
 let cachedSessionId: string | null = null;
 let cachedSessionMeta: SessionMeta | null = null;
 
-function getOrCreateSession(): { id: string; isNew: boolean; meta: SessionMeta } {
+export function getOrCreateSession(): { id: string; isNew: boolean; meta: SessionMeta } {
   const now = Date.now();
 
   try {

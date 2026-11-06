@@ -16,6 +16,8 @@
     "react-hook-form": "^7.91.0",
     "react-router-dom": "^7.18.5",
     "recharts": "^3.10.1",
+    "rrweb": "^2.2.0",
+    "rrweb-player": "^2.2.0",
     "zod": "^4.6.7",
     "zustand": "^5.0.16"
   },
