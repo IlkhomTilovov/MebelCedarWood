@@ -5,11 +5,6 @@ import { ApplicationFormPage } from '@/pages/ApplicationFormPage';
 import { ContractPage } from '@/pages/ContractPage';
 import { LandingPage } from '@/pages/LandingPage';
 import { SuccessPage } from '@/pages/SuccessPage';
-import { usePageViewTracking } from '@/lib/analytics/usePageViewTracking';
-import { useScrollTracking } from '@/lib/analytics/useScrollTracking';
-import { useClickTracking } from '@/lib/analytics/useClickTracking';
-import { useExitIntentTracking } from '@/lib/analytics/useExitIntentTracking';
-
 // Admin panel kodi (recharts bilan) lazy-load qilinadi — asosiy reklama/landing
 // sahifalarining bundle hajmiga ta'sir qilmasin.
 const AdminGuard = lazy(() => import('@/admin/AdminGuard').then((m) => ({ default: m.AdminGuard })));
@@ -52,14 +47,6 @@ function ScrollToTop() {
   return null;
 }
 
-function AnalyticsTracking() {
-  usePageViewTracking();
-  useScrollTracking();
-  useClickTracking();
-  useExitIntentTracking();
-  return null;
-}
-
 function AdminFallback() {
   return <div className="flex min-h-screen items-center justify-center bg-charcoal text-warm-white/70">Yuklanmoqda...</div>;
 }
@@ -68,7 +55,6 @@ function App() {
   return (
     <>
       <ScrollToTop />
-      <AnalyticsTracking />
       <Routes>
         <Route element={<PublicLayout />}>
           <Route path="/" element={<LandingPage />} />

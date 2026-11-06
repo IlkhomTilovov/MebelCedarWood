@@ -112,9 +112,9 @@ async function upsertSession({ sessionId, visitorId, device, geo, utm, trafficSo
   await pool.query(
     `INSERT INTO analytics_sessions (
        session_id, visitor_id, started_at, entry_page, traffic_source,
-       utm_source, utm_medium, utm_campaign, utm_content, utm_term,
+       utm_source, utm_medium, utm_campaign, utm_content, utm_term, utm_id,
        referrer, device_type, browser, os, region
-     ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)
+     ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)
      ON CONFLICT (session_id) DO NOTHING`,
     [
       sessionId,
@@ -127,6 +127,7 @@ async function upsertSession({ sessionId, visitorId, device, geo, utm, trafficSo
       utm?.campaign ?? null,
       utm?.content ?? null,
       utm?.term ?? null,
+      utm?.id ?? null,
       referrer ?? null,
       device?.type ?? null,
       device?.browser ?? null,

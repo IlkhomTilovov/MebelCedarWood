@@ -7,8 +7,8 @@ export async function syncAdSpend(since, until) {
 
   for (const row of rows) {
     await pool.query(
-      `INSERT INTO ad_spend_daily (platform, stat_date, campaign_id, campaign_name, adset_id, adset_name, ad_id, ad_name, spend, impressions, clicks, reach)
-       VALUES ('facebook',$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
+      `INSERT INTO ad_spend_daily (platform, stat_date, campaign_id, campaign_name, adset_id, adset_name, ad_id, ad_name, spend, impressions, clicks, reach, meta_leads)
+       VALUES ('facebook',$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
        ON CONFLICT (platform, stat_date, ad_id) DO UPDATE SET
          campaign_id = EXCLUDED.campaign_id,
          campaign_name = EXCLUDED.campaign_name,
@@ -18,7 +18,8 @@ export async function syncAdSpend(since, until) {
          spend = EXCLUDED.spend,
          impressions = EXCLUDED.impressions,
          clicks = EXCLUDED.clicks,
-         reach = EXCLUDED.reach`,
+         reach = EXCLUDED.reach,
+         meta_leads = EXCLUDED.meta_leads`,
       [
         row.date,
         row.campaignId,
@@ -31,6 +32,7 @@ export async function syncAdSpend(since, until) {
         row.impressions,
         row.clicks,
         row.reach,
+        row.metaLeads,
       ],
     );
   }

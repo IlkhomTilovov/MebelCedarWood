@@ -34,6 +34,7 @@ const batchSchema = z.object({
       campaign: z.string().max(128).optional(),
       content: z.string().max(128).optional(),
       term: z.string().max(128).optional(),
+      id: z.string().max(128).optional(),
     })
     .optional(),
   trafficSource: z.string().max(64).optional(),

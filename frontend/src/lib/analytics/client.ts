@@ -22,7 +22,7 @@ interface TrackedEvent {
 
 interface SessionMeta {
   trafficSource: string;
-  utm: { source?: string; medium?: string; campaign?: string; content?: string; term?: string };
+  utm: { source?: string; medium?: string; campaign?: string; content?: string; term?: string; id?: string };
   referrer: string;
   landingPage: string;
 }
@@ -127,6 +127,7 @@ function buildSessionMeta(): SessionMeta {
       campaign: url.searchParams.get('utm_campaign') ?? undefined,
       content: url.searchParams.get('utm_content') ?? undefined,
       term: url.searchParams.get('utm_term') ?? undefined,
+      id: url.searchParams.get('utm_id') ?? undefined,
     },
     referrer,
     landingPage: url.pathname,

@@ -4,17 +4,19 @@ import { DateRangeFilter } from '@/admin/components/DateRangeFilter';
 import { useDateRangeFilter } from '@/admin/useDateRangeFilter';
 
 interface AdRoiRow {
+  adId: string;
   campaignName: string | null;
   adName: string | null;
   spend: number;
   impressions: number;
   clicks: number;
   reach: number;
-  visits: number;
-  leads: number;
+  metaLeads: number;
+  costPerMetaLead: number | null;
+  websiteVisits: number;
+  websiteLeads: number;
   orders: number;
-  costPerLead: number | null;
-  costPerOrder: number | null;
+  costPerWebsiteLead: number | null;
   matched: boolean;
 }
 
@@ -63,7 +65,8 @@ export function AdsRoiPage() {
         <div>
           <h1 className="font-heading text-2xl font-bold text-charcoal">Reklama ROI (Facebook/Meta)</h1>
           <p className="mt-1 text-xs text-charcoal/50">
-            Xarajat — Meta Ads'dan, tashrif/ariza — bizning tizimdan, kampaniya/reklama nomi orqali bog'langan.
+            Xarajat va "Meta Lead" — Facebook'ning o'zidan (shu jumladan Instant Form). "Veb-sayt" ustunlari — bizning
+            saytimizdagi tashrif/ariza, faqat reklama havolasida <code>utm_id={'{{ad.id}}'}</code> bo'lsa bog'lanadi.
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -89,53 +92,54 @@ export function AdsRoiPage() {
               <div className="font-semibold text-charcoal">{formatMoney(data.totalSpend)}</div>
             </div>
             <div className="rounded-xl border border-light-gray bg-warm-white p-4 text-sm">
-              <div className="text-xs uppercase text-charcoal/50">Mos kelgan reklamalar</div>
+              <div className="text-xs uppercase text-charcoal/50">Signal topilgan reklamalar</div>
               <div className="font-semibold text-charcoal">{data.rows.length - data.unmatchedCount} / {data.rows.length}</div>
             </div>
             <div className="rounded-xl border border-light-gray bg-warm-white p-4 text-sm">
-              <div className="text-xs uppercase text-charcoal/50">Mos kelmagan xarajat</div>
+              <div className="text-xs uppercase text-charcoal/50">Signalsiz xarajat</div>
               <div className="font-semibold text-charcoal">{formatMoney(data.unmatchedSpend)}</div>
             </div>
           </div>
 
           {data.unmatchedCount > 0 && (
             <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
-              {data.unmatchedCount} ta reklama uchun xarajat bor, lekin bizning saytimizda unga mos tashrif topilmadi.
-              Reklama havolalarida <code>utm_campaign={'{{campaign.name}}'}</code> va{' '}
-              <code>utm_content={'{{ad.name}}'}</code> dinamik parametrlari ishlatilganiga ishonch hosil qiling.
+              {data.unmatchedCount} ta reklama uchun xarajat bor, lekin na Meta lead, na veb-sayt tashrifi topildi.
+              Reklama havolasida <code>utm_id={'{{ad.id}}'}</code> parametri yo'qmi yoki reklama hali juda yangimi, tekshiring.
             </div>
           )}
 
           <div className="overflow-x-auto rounded-xl border border-light-gray bg-warm-white">
-            <table className="w-full min-w-[900px] text-left text-sm">
+            <table className="w-full min-w-[1000px] text-left text-sm">
               <thead>
                 <tr className="border-b border-light-gray text-xs font-semibold uppercase tracking-wide text-charcoal/50">
                   <th className="px-4 py-3">Kampaniya</th>
                   <th className="px-4 py-3">Reklama</th>
                   <th className="px-4 py-3">Xarajat</th>
                   <th className="px-4 py-3">Click</th>
-                  <th className="px-4 py-3">Tashrif</th>
-                  <th className="px-4 py-3">Ariza</th>
-                  <th className="px-4 py-3">CPL</th>
+                  <th className="px-4 py-3">Meta Lead</th>
+                  <th className="px-4 py-3">CPL (Meta)</th>
+                  <th className="px-4 py-3">Veb tashrif</th>
+                  <th className="px-4 py-3">Veb ariza</th>
                   <th className="px-4 py-3">Buyurtma</th>
                 </tr>
               </thead>
               <tbody>
-                {data.rows.map((r, i) => (
-                  <tr key={i} className={`border-b border-light-gray last:border-0 ${!r.matched ? 'opacity-50' : ''}`}>
+                {data.rows.map((r) => (
+                  <tr key={r.adId} className={`border-b border-light-gray last:border-0 ${!r.matched ? 'opacity-50' : ''}`}>
                     <td className="px-4 py-3 text-charcoal/70">{r.campaignName ?? '—'}</td>
                     <td className="px-4 py-3 text-charcoal/70">{r.adName ?? '—'}</td>
                     <td className="px-4 py-3 font-semibold text-charcoal">{formatMoney(r.spend)}</td>
                     <td className="px-4 py-3">{r.clicks}</td>
-                    <td className="px-4 py-3">{r.visits}</td>
-                    <td className="px-4 py-3">{r.leads}</td>
-                    <td className="px-4 py-3">{r.costPerLead !== null ? formatMoney(r.costPerLead) : '—'}</td>
+                    <td className="px-4 py-3">{r.metaLeads}</td>
+                    <td className="px-4 py-3">{r.costPerMetaLead !== null ? formatMoney(r.costPerMetaLead) : '—'}</td>
+                    <td className="px-4 py-3">{r.websiteVisits}</td>
+                    <td className="px-4 py-3">{r.websiteLeads}</td>
                     <td className="px-4 py-3">{r.orders}</td>
                   </tr>
                 ))}
                 {data.rows.length === 0 && (
                   <tr>
-                    <td colSpan={8} className="px-4 py-8 text-center text-charcoal/40">
+                    <td colSpan={9} className="px-4 py-8 text-center text-charcoal/40">
                       Hali Facebook xarajat ma'lumoti yo'q — "Hozir sync qilish" tugmasini bosing.
                     </td>
                   </tr>
