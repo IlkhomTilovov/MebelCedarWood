@@ -1,4 +1,4 @@
-import { getOrCreateVisitorId, getOrCreateSession } from './client';
+import { getOrCreateVisitorId, getOrCreateSession, isInternalVisitor } from './client';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'https://api.mebel.com.uz';
 const RECORDINGS_URL = `${API_BASE_URL}/api/recordings`;
@@ -40,7 +40,7 @@ function flush(useBeacon = false) {
 // Shu sessiyada bir marta ishga tushadi. Maxfiy ma'lumotlar (parol, forma qiymatlari)
 // hech qachon yozilmaydi — faqat sahifa tuzilishi/sichqoncha/scroll.
 export function startSessionRecording() {
-  if (stopFn || Math.random() >= SAMPLING_RATE) return;
+  if (stopFn || isInternalVisitor() || Math.random() >= SAMPLING_RATE) return;
 
   import('rrweb')
     .then(({ record }) => {

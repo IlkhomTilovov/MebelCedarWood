@@ -27,6 +27,12 @@ interface SessionMeta {
   landingPage: string;
 }
 
+// Admin panelga kirgan brauzer uchun login vaqtida o'rnatiladigan cookie — shunday
+// brauzerdan hech qanday tracking ma'lumoti yuborilmaydi (o'zini "tashrifchi" deb hisoblamasin).
+export function isInternalVisitor(): boolean {
+  return readCookie('cw_internal_visitor') === '1';
+}
+
 function readCookie(name: string): string | null {
   try {
     const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
@@ -241,6 +247,7 @@ function flush(useBeacon = false) {
 }
 
 export function enqueueEvent(event: TrackedEvent) {
+  if (isInternalVisitor()) return;
   queue.push(event);
   if (queue.length >= FLUSH_QUEUE_SIZE) {
     flush();

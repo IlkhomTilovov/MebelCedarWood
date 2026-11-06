@@ -9,6 +9,13 @@ import { loginRateLimiter } from '../../middleware/rateLimiter.js';
 const SESSION_TTL_MS = 30 * 24 * 60 * 60 * 1000; // 30 kun
 const isProd = process.env.NODE_ENV === 'production';
 
+// Admin kirgan qurilma asosiy saytga kirganda ham "tashrifchi" sifatida hisoblanib
+// ketmasligi uchun — bu cookie mebel.com.uz'da ham o'qiladi (api.mebel.com.uz bu
+// domenning subdomeni bo'lgani uchun uning nomidan ota-domenga cookie qo'yish mumkin).
+const INTERNAL_VISITOR_COOKIE = 'cw_internal_visitor';
+const PUBLIC_SITE_DOMAIN = process.env.PUBLIC_SITE_DOMAIN || 'mebel.com.uz';
+const INTERNAL_VISITOR_TTL_MS = 365 * 24 * 60 * 60 * 1000; // 1 yil
+
 export const adminAuthRouter = Router();
 
 adminAuthRouter.post(
@@ -45,6 +52,17 @@ adminAuthRouter.post(
       expires: expiresAt,
       path: '/',
     });
+
+    // Tracking kodi bu cookie'ni ko'rib, shu brauzerdan hech narsa yubormaydi.
+    res.cookie(INTERNAL_VISITOR_COOKIE, '1', {
+      httpOnly: false,
+      secure: isProd,
+      sameSite: 'lax',
+      domain: isProd ? PUBLIC_SITE_DOMAIN : undefined,
+      maxAge: INTERNAL_VISITOR_TTL_MS,
+      path: '/',
+    });
+
     res.json({ username: user.username });
   }),
 );
@@ -57,6 +75,7 @@ adminAuthRouter.post(
       await pool.query(`DELETE FROM admin_sessions WHERE id = $1`, [sessionId]);
     }
     res.clearCookie(ADMIN_SESSION_COOKIE, { path: '/' });
+    res.clearCookie(INTERNAL_VISITOR_COOKIE, { path: '/', domain: isProd ? PUBLIC_SITE_DOMAIN : undefined });
     res.json({ ok: true });
   }),
 );
