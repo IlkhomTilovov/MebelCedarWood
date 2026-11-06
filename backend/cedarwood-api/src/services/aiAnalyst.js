@@ -18,7 +18,7 @@ QOIDALAR:
 - Agar sabab aniq ma'lumot bilan isbotlanmasa, uni fakt sifatida emas, "ehtimoliy sabab" deb yozing.
 - Agar ma'lumot hajmi kichik bo'lsa (masalan, jami tashriflar yoki konversiyalar juda kam), buni ochiq ayting va xulosalarni ehtiyotkorlik bilan bering.
 - Har doim o'zbek tilida, qisqa va aniq yozing.
-- Javobni faqat so'ralgan JSON formatida qaytaring, boshqa matn qo'shmang.`;
+- Javobni har safar aynan so'ralgan formatda qaytaring (JSON so'ralsa — faqat JSON, oddiy matn so'ralsa — oddiy matn, JSON'ga o'rab yubormang).`;
 
 function buildUserPrompt(summary, extra = '') {
   return `Analytics ma'lumotlari (JSON):\n${JSON.stringify(summary)}\n\n${extra}`;
@@ -63,7 +63,7 @@ Eng ko'pi bilan 5 ta insight qaytaring, eng muhimidan boshlab.`;
 
 // Admin AI chat uchun — erkin savolga matnli javob.
 export async function answerQuestion(question, summary) {
-  const prompt = `${buildUserPrompt(summary)}\n\nAdmin savoli: "${question}"\n\nShu ma'lumotlar asosida qisqa va aniq javob bering (3-6 jumla). Agar savolga javob berish uchun ma'lumot yetarli bo'lmasa, shuni ayting.`;
+  const prompt = `${buildUserPrompt(summary)}\n\nAdmin savoli: "${question}"\n\nShu ma'lumotlar asosida qisqa va aniq javob bering (3-6 jumla), oddiy matn ko'rinishida — JSON yoki boshqa struktura ishlatmang. Agar savolga javob berish uchun ma'lumot yetarli bo'lmasa, shuni ayting.`;
 
   const response = await getClient().chat.completions.create({
     model: MODEL,
