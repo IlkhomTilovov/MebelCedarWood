@@ -24,6 +24,28 @@ function buildUserPrompt(summary, extra = '') {
   return `Analytics ma'lumotlari (JSON):\n${JSON.stringify(summary)}\n\n${extra}`;
 }
 
+// Model ba'zan oddiy matnni ham JSON/kod blokiga o'rab yuborishi mumkin — himoya sifatida
+// shunday holatlarda ichidagi matnni ajratib olamiz.
+function extractPlainAnswer(raw) {
+  let text = raw.trim();
+  const fenceMatch = text.match(/^```(?:json)?\s*([\s\S]*?)\s*```$/i);
+  if (fenceMatch) text = fenceMatch[1].trim();
+
+  if (text.startsWith('{') || text.startsWith('[')) {
+    try {
+      const parsed = JSON.parse(text);
+      if (typeof parsed === 'string') return parsed;
+      if (parsed && typeof parsed === 'object') {
+        const value = parsed.answer ?? parsed.javob ?? parsed.text ?? parsed.summary;
+        if (typeof value === 'string') return value;
+      }
+    } catch {
+      // JSON emas ekan — matnni xomligicha qoldiramiz
+    }
+  }
+  return text;
+}
+
 // Bitta kunlik/haftalik hisobot uchun: matnli AI xulosa + tuzilgan insight'lar ro'yxati.
 export async function analyzeAndSummarize(summary) {
   const prompt = `${buildUserPrompt(summary)}
@@ -63,15 +85,17 @@ Eng ko'pi bilan 5 ta insight qaytaring, eng muhimidan boshlab.`;
 
 // Admin AI chat uchun — erkin savolga matnli javob.
 export async function answerQuestion(question, summary) {
-  const prompt = `${buildUserPrompt(summary)}\n\nAdmin savoli: "${question}"\n\nShu ma'lumotlar asosida qisqa va aniq javob bering (3-6 jumla), oddiy matn ko'rinishida — JSON yoki boshqa struktura ishlatmang. Agar savolga javob berish uchun ma'lumot yetarli bo'lmasa, shuni ayting.`;
+  const chatSystemRules = `${SYSTEM_RULES}
+Bu javob ADMIN uchun oddiy chat xabari sifatida ko'rsatiladi. Hech qanday holatda JSON formatidan yoki \`\`\` kod blokidan foydalanmang — faqat tabiiy, o'zbekcha gaplar yozing.`;
+  const prompt = `${buildUserPrompt(summary)}\n\nAdmin savoli: "${question}"\n\nShu ma'lumotlar asosida qisqa va aniq javob bering (3-6 jumla), oddiy matn ko'rinishida. Agar savolga javob berish uchun ma'lumot yetarli bo'lmasa, shuni ayting.`;
 
   const response = await getClient().chat.completions.create({
     model: MODEL,
     messages: [
-      { role: 'system', content: SYSTEM_RULES },
+      { role: 'system', content: chatSystemRules },
       { role: 'user', content: prompt },
     ],
   });
 
-  return response.choices[0].message.content;
+  return extractPlainAnswer(response.choices[0].message.content);
 }
