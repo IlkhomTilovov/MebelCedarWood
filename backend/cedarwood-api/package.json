@@ -20,11 +20,9 @@
     "express": "^4.19.2",
     "express-rate-limit": "^7.4.1",
     "geoip-lite": "^1.4.10",
+    "node-pg-migrate": "^7.9.1",
     "pg": "^8.13.1",
     "ua-parser-js": "^1.0.39",
     "zod": "^3.24.1"
-  },
-  "devDependencies": {
-    "node-pg-migrate": "^7.9.1"
   }
 }
