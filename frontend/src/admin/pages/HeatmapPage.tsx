@@ -53,7 +53,10 @@ export function HeatmapPage() {
   }, [page]);
 
   const refWidth = VIEWPORT_OPTIONS.find((v) => v.value === viewport)!.refWidth;
-  const scale = PANEL_WIDTH / refWidth;
+  // Hech qachon kattalashtirilmaydi (mobil sahifa haqiqiy o'lchamidan katta ko'rinib
+  // ketmasin) — faqat kerak bo'lsa kichraytiriladi.
+  const scale = Math.min(1, PANEL_WIDTH / refWidth);
+  const displayWidth = refWidth * scale;
 
   const visiblePoints = clickPoints.filter((p) => p.viewport_bucket === viewport);
   const maxClicks = Math.max(1, ...visiblePoints.map((p) => p.click_count));
@@ -123,8 +126,8 @@ export function HeatmapPage() {
             </p>
           ) : (
             <div
-              className="relative overflow-hidden"
-              style={{ width: PANEL_WIDTH, height: Math.min(IFRAME_HEIGHT, 1400) * scale }}
+              className="relative overflow-hidden bg-light-gray/20"
+              style={{ width: displayWidth, height: Math.min(IFRAME_HEIGHT, 1400) * scale }}
             >
               <div
                 className="absolute top-0 left-0"
