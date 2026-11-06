@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { adminApi } from '@/admin/adminApi';
 
 const PAGE_OPTIONS = [
@@ -40,6 +40,10 @@ export function HeatmapPage() {
   const [mode, setMode] = useState<'click' | 'scroll'>('click');
   const [clickPoints, setClickPoints] = useState<ClickPoint[]>([]);
   const [scrollPoints, setScrollPoints] = useState<ScrollPoint[]>([]);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  // Iframe bir xil domendan (mebel.com.uz) bo'lgani uchun uning HAQIQIY balandligini
+  // o'qib olish mumkin — taxmin qilish shart emas.
+  const [realHeight, setRealHeight] = useState<number | null>(null);
 
   useEffect(() => {
     adminApi
@@ -50,7 +54,26 @@ export function HeatmapPage() {
       .get<ScrollPoint[]>('/heatmap', { page, type: 'scroll' })
       .then(setScrollPoints)
       .catch(() => setScrollPoints([]));
+    setRealHeight(null);
   }, [page]);
+
+  const measureRealHeight = () => {
+    try {
+      const doc = iframeRef.current?.contentDocument;
+      if (doc?.documentElement.scrollHeight) setRealHeight(doc.documentElement.scrollHeight);
+    } catch {
+      /* noop — o'qib bo'lmasa, taxminiy balandlikka qaytiladi */
+    }
+  };
+
+  // Mobile/Tablet/Desktop almashtirilganda iframe qayta yuklanmaydi (shu sabab onLoad
+  // chaqirilmaydi), lekin kengligi o'zgarib, ichki layout qayta hisoblanadi — shuning
+  // uchun bu holatda ham balandlikni qayta o'lchaymiz.
+  useEffect(() => {
+    const id = setTimeout(measureRealHeight, 80);
+    return () => clearTimeout(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [viewport]);
 
   const refWidth = VIEWPORT_OPTIONS.find((v) => v.value === viewport)!.refWidth;
   // Hech qachon kattalashtirilmaydi (mobil sahifa haqiqiy o'lchamidan katta ko'rinib
@@ -60,10 +83,11 @@ export function HeatmapPage() {
 
   const visiblePoints = clickPoints.filter((p) => p.viewport_bucket === viewport);
   const maxClicks = Math.max(1, ...visiblePoints.map((p) => p.click_count));
-  // Haqiqiy sahifa balandligi oldindan noma'lum — eng pastdagi nuqtadan picha pastroqqacha
-  // ko'rsatamiz, shunda hozircha kam ma'lumot bo'lsa ham hamma nuqta ko'rinadi.
+  // Haqiqiy balandlik o'lchab bo'lmaguncha (iframe hali yuklanmagan) taxminiy qiymat
+  // ishlatiladi; o'lchab bo'lingach, aynan shu haqiqiy balandlik ishlatiladi.
   const maxPointY = Math.max(0, ...visiblePoints.map((p) => p.y_bucket * COORD_BUCKET_PX));
-  const contentHeight = Math.min(IFRAME_HEIGHT, Math.max(1600, maxPointY + 400));
+  const fallbackHeight = Math.min(IFRAME_HEIGHT, Math.max(1600, maxPointY + 400));
+  const contentHeight = realHeight ?? fallbackHeight;
 
   const scrollForViewport = scrollPoints.filter((p) => p.viewport_bucket === viewport);
   const scrollByDepth = new Map(scrollForViewport.map((p) => [p.depth_bucket, p.visitor_count]));
@@ -141,12 +165,14 @@ export function HeatmapPage() {
                   style={{ width: refWidth, height: contentHeight, transform: `scale(${scale})`, transformOrigin: 'top left' }}
                 >
                   <iframe
+                    ref={iframeRef}
                     title="heatmap-preview"
                     src={`${SITE_ORIGIN}${page}`}
                     width={refWidth}
                     height={contentHeight}
                     style={{ border: 0 }}
                     loading="lazy"
+                    onLoad={measureRealHeight}
                   />
                   <div className="pointer-events-none absolute inset-0">
                     {visiblePoints.map((p, i) => {
