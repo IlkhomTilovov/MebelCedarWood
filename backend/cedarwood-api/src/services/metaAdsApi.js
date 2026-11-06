@@ -5,14 +5,15 @@ function toDateOnly(date) {
   return date.toISOString().slice(0, 10);
 }
 
-// Meta'ning "actions" ro'yxatidagi barcha lead-turi action'larni yig'adi — bu Instant
-// Form/Messaging reklamalarida saytga umuman kirmasdan Facebook ichida qoldirilgan
-// arizalarni ham qamrab oladi (ads_read ruxsati yetarli, leads_retrieval shart emas).
+// Ads Manager'ning "Results" ustuni Instant Form reklamalari uchun aynan
+// 'onsite_conversion.lead_grouped'ni, veb-sayt/pixel asosidagi lead kampaniyalari uchun
+// 'lead'ni ishlatadi. Boshqa "*_add_meta_leads" kabi action turlari ularning
+// dublikati/boshqa attribution modeli bo'lib, qo'shib yuborilsa sonni bir necha barobar
+// oshirib yuboradi — shuning uchun faqat shu ikkitadan BITTASI olinadi, ustma-ust qo'shilmaydi.
 function extractLeadCount(actions) {
   if (!Array.isArray(actions)) return 0;
-  return actions
-    .filter((a) => /lead/i.test(a.action_type ?? ''))
-    .reduce((sum, a) => sum + Number(a.value ?? 0), 0);
+  const byType = new Map(actions.map((a) => [a.action_type, Number(a.value ?? 0)]));
+  return byType.get('onsite_conversion.lead_grouped') ?? byType.get('lead') ?? 0;
 }
 
 // Facebook/Meta Marketing API'dan kunlik, reklama darajasidagi xarajat ma'lumotlarini tortib oladi.
@@ -59,7 +60,6 @@ export async function fetchAdInsights(since, until) {
         clicks: Number(row.clicks ?? 0),
         reach: Number(row.reach ?? 0),
         metaLeads: extractLeadCount(row.actions),
-        rawActions: row.actions ?? [],
       });
     }
 
