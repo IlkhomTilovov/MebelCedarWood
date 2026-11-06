@@ -41,9 +41,13 @@ jobs:
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           CHAT_ID: ${{ secrets.CHAT_ID }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          ADMIN_USERNAME: ${{ secrets.ADMIN_USERNAME }}
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+          ALLOWED_ORIGINS: ${{ secrets.ALLOWED_ORIGINS }}
           VPS_HOST: ${{ steps.host.outputs.value }}
         run: |
-          ssh "root@$VPS_HOST" "BOT_TOKEN='${BOT_TOKEN}' CHAT_ID='${CHAT_ID}' bash -s" <<'REMOTE_SCRIPT'
+          ssh "root@$VPS_HOST" "BOT_TOKEN='${BOT_TOKEN}' CHAT_ID='${CHAT_ID}' DATABASE_URL='${DATABASE_URL}' ADMIN_USERNAME='${ADMIN_USERNAME}' ADMIN_PASSWORD='${ADMIN_PASSWORD}' ALLOWED_ORIGINS='${ALLOWED_ORIGINS}' bash -s" <<'REMOTE_SCRIPT'
           set -euo pipefail
 
           id cedarwood >/dev/null 2>&1 || useradd -r -M -s /usr/sbin/nologin cedarwood
@@ -52,6 +56,11 @@ jobs:
           BOT_TOKEN=${BOT_TOKEN}
           CHAT_ID=${CHAT_ID}
           PORT=4100
+          DATABASE_URL=${DATABASE_URL}
+          ADMIN_USERNAME=${ADMIN_USERNAME}
+          ADMIN_PASSWORD=${ADMIN_PASSWORD}
+          ALLOWED_ORIGINS=${ALLOWED_ORIGINS}
+          NODE_ENV=production
           EOF
           chmod 600 /opt/cedarwood-api/.env
           chown -R cedarwood:cedarwood /opt/cedarwood-api
@@ -82,6 +91,18 @@ jobs:
           cat > /etc/nginx/sites-available/cedarwood-api <<'EOF'
           server {
               server_name api.mebel.com.uz;
+
+              location /api/admin/realtime/stream {
+                  proxy_pass http://127.0.0.1:4100;
+                  proxy_http_version 1.1;
+                  proxy_set_header Host $host;
+                  proxy_set_header X-Real-IP $remote_addr;
+                  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                  proxy_set_header X-Forwarded-Proto $scheme;
+                  proxy_buffering off;
+                  proxy_cache off;
+                  proxy_read_timeout 1h;
+              }
 
               location /api/ {
                   proxy_pass http://127.0.0.1:4100;

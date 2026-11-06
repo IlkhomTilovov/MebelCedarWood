@@ -149,7 +149,14 @@ export function Portfolio() {
               {visible.map((project) => {
                 const Icon = CATEGORY_ICONS[project.category];
                 return (
-                  <a key={project.title} href="/contract" className="group relative block overflow-hidden rounded-xl border-2 border-gold/40 transition-colors hover:border-gold/70">
+                  <a
+                    key={project.title}
+                    href="/contract"
+                    data-track="product_view"
+                    data-product-name={project.title}
+                    data-product-category={project.category}
+                    className="group relative block overflow-hidden rounded-xl border-2 border-gold/40 transition-colors hover:border-gold/70"
+                  >
                     <ImagePlaceholder
                       label={project.title}
                       src={project.src}

@@ -108,10 +108,10 @@ export function StepReview() {
       {submitError && <p className="text-sm text-red-500">{submitError}</p>}
 
       <StepActions>
-        <Button type="button" variant="ghost" onClick={prevStep} disabled={isSubmitting} className="w-full sm:w-auto">
+        <Button type="button" data-track="step_review_back" variant="ghost" onClick={prevStep} disabled={isSubmitting} className="w-full sm:w-auto">
           Orqaga
         </Button>
-        <Button type="button" onClick={handleSubmit} disabled={isSubmitting} className="w-full sm:w-auto">
+        <Button type="button" data-track="step_review_submit" onClick={handleSubmit} disabled={isSubmitting} className="w-full sm:w-auto">
           {isSubmitting ? 'Yuborilmoqda...' : 'Arizani yuborish'}
         </Button>
       </StepActions>

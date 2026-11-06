@@ -3,6 +3,7 @@ import { persist } from 'zustand/middleware';
 import { submitApplication as submitApplicationRequest } from '@/lib/api';
 import { CONSENT_TEXT } from '@/lib/contract';
 import { trackLead } from '@/lib/fbq';
+import { trackEvent } from '@/lib/analytics/track';
 import type {
   ApplicationFormData,
   FurnitureCategory,
@@ -81,6 +82,8 @@ export const useApplicationStore = create<ApplicationState>()(
           });
           set({ submittedApplication: result });
           trackLead();
+          trackEvent('form_submit', { applicationNumber: result.applicationNumber });
+          trackEvent('order_created', { applicationNumber: result.applicationNumber });
           return result;
         } finally {
           set({ isSubmitting: false });

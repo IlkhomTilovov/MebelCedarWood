@@ -26,6 +26,7 @@ export function CtaBand() {
           </div>
           <Link
             to="/contract"
+            data-track="cta_band_contract_review"
             className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-gold px-6 py-3.5 text-xs font-semibold tracking-wide text-charcoal uppercase transition-colors hover:bg-[#a68a56] sm:w-auto"
           >
             Shartnomani ko'rib chiqish
@@ -46,6 +47,7 @@ export function CtaBand() {
           </div>
           <Link
             to="/contract"
+            data-track="cta_band_order_start"
             className="relative inline-flex w-full items-center justify-center gap-2 rounded-lg bg-warm-white px-6 py-3.5 text-xs font-semibold tracking-wide text-charcoal uppercase transition-colors hover:bg-warm-white/90 sm:w-auto"
           >
             Buyurtma berish

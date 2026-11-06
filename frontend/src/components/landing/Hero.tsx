@@ -71,6 +71,7 @@ export function Hero() {
         <div className="mt-10 flex w-full flex-col gap-3 border-t border-warm-white/15 pt-8 sm:mt-12 sm:w-auto sm:flex-row sm:gap-4">
           <Link
             to="/contract"
+            data-track="hero_contract_cta"
             className="inline-flex items-center justify-center rounded-lg bg-gold px-8 py-4 text-sm font-semibold tracking-wide text-charcoal uppercase transition-colors hover:bg-[#a68a56]"
           >
             Shartnomani ko'rib chiqish
