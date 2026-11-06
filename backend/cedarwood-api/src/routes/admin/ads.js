@@ -17,6 +17,13 @@ adminAdsRouter.post(
   }),
 );
 
+function resolveStatus({ websiteVisits, metaLeads, campaignObjective }) {
+  if (websiteVisits > 0) return 'website_lead';
+  if (metaLeads > 0) return 'meta_lead';
+  if (campaignObjective && campaignObjective.toUpperCase().includes('ENGAGEMENT')) return 'engagement';
+  return 'too_early';
+}
+
 adminAdsRouter.get(
   '/roi',
   asyncHandler(async (req, res) => {
@@ -26,7 +33,8 @@ adminAdsRouter.get(
       // ad_id bo'yicha guruhlanadi — ad nomi bir nechta ad set'da takrorlanishi
       // mumkin, nom bo'yicha guruhlash xarajatlarni noto'g'ri qo'shib yuboradi.
       pool.query(
-        `SELECT ad_id, max(campaign_name) AS campaign_name, max(ad_name) AS ad_name,
+        `SELECT ad_id, max(campaign_name) AS campaign_name, max(adset_name) AS adset_name, max(ad_name) AS ad_name,
+                max(campaign_objective) AS campaign_objective,
                 sum(spend) AS spend, sum(impressions) AS impressions, sum(clicks) AS clicks, sum(reach) AS reach,
                 sum(meta_leads) AS meta_leads
          FROM ad_spend_daily
@@ -61,36 +69,32 @@ adminAdsRouter.get(
       const website = conversionsByAdId.get(r.ad_id) ?? { visits: 0, leads: 0, orders: 0 };
       const spend = Number(r.spend);
       const metaLeads = Number(r.meta_leads);
+      const status = resolveStatus({ websiteVisits: website.visits, metaLeads, campaignObjective: r.campaign_objective });
       return {
         adId: r.ad_id,
         campaignName: r.campaign_name,
+        adsetName: r.adset_name,
         adName: r.ad_name,
+        campaignObjective: r.campaign_objective,
         spend,
         impressions: Number(r.impressions),
         clicks: Number(r.clicks),
         reach: Number(r.reach),
         metaLeads,
         costPerMetaLead: metaLeads > 0 ? Math.round((spend / metaLeads) * 100) / 100 : null,
+        // Instant Form/Engagement reklamalarida sayt tashrifi tushunchaning o'zi
+        // qo'llanilmaydi — "0" emas, "qo'llanilmaydi" degani, shuning uchun frontend
+        // bu holatlarda "—" ko'rsatadi (status orqali aniqlanadi).
         websiteVisits: website.visits,
         websiteLeads: website.leads,
         orders: website.orders,
         costPerWebsiteLead: website.leads > 0 ? Math.round((spend / website.leads) * 100) / 100 : null,
-        // Instant Form/Messaging reklamalari saytga umuman kirmaydi — ularda Meta o'zi
-        // lead'ni tasdiqlasa, bu "mos kelmagan" emas, shunchaki boshqa turdagi reklama.
-        matched: website.visits > 0 || metaLeads > 0,
+        status,
       };
     });
 
     const totalSpend = rows.reduce((sum, r) => sum + r.spend, 0);
-    const unmatchedRows = rows.filter((r) => !r.matched);
-    const unmatchedSpend = unmatchedRows.reduce((sum, r) => sum + r.spend, 0);
 
-    res.json({
-      range: { from, to },
-      rows,
-      totalSpend,
-      unmatchedSpend,
-      unmatchedCount: unmatchedRows.length,
-    });
+    res.json({ range: { from, to }, rows, totalSpend });
   }),
 );

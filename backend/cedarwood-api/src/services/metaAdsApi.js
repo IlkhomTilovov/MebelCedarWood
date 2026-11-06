@@ -68,3 +68,31 @@ export async function fetchAdInsights(since, until) {
 
   return rows;
 }
+
+// Kampaniya maqsadini (objective) oladi — Engagement kabi lead kutilmaydigan
+// kampaniyalarni admin UI'da to'g'ri izohlash uchun kerak.
+export async function fetchCampaignObjectives() {
+  const accessToken = process.env.FACEBOOK_ACCESS_TOKEN;
+  const adAccountId = process.env.FACEBOOK_AD_ACCOUNT_ID;
+  if (!accessToken || !adAccountId) {
+    throw new Error('FACEBOOK_ACCESS_TOKEN va FACEBOOK_AD_ACCOUNT_ID sozlanmagan');
+  }
+
+  const params = new URLSearchParams({ fields: 'id,objective', limit: '500', access_token: accessToken });
+  let url = `https://graph.facebook.com/${API_VERSION}/${adAccountId}/campaigns?${params.toString()}`;
+  const objectivesById = new Map();
+
+  while (url) {
+    const response = await fetch(url);
+    const body = await response.json();
+    if (!response.ok || body.error) {
+      throw new Error(`Meta Ads API xatosi: ${body.error?.message ?? response.statusText}`);
+    }
+    for (const row of body.data ?? []) {
+      objectivesById.set(row.id, row.objective ?? null);
+    }
+    url = body.paging?.next ?? null;
+  }
+
+  return objectivesById;
+}
