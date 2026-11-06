@@ -59,6 +59,7 @@ export async function fetchAdInsights(since, until) {
         clicks: Number(row.clicks ?? 0),
         reach: Number(row.reach ?? 0),
         metaLeads: extractLeadCount(row.actions),
+        rawActions: row.actions ?? [],
       });
     }
 

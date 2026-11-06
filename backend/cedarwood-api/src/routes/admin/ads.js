@@ -4,6 +4,7 @@ import { asyncHandler } from '../../middleware/asyncHandler.js';
 import { requireAdmin } from '../../middleware/requireAdmin.js';
 import { resolveDateRange } from '../../services/dateRange.js';
 import { syncAdSpend } from '../../services/adSpendSync.js';
+import { fetchAdInsights } from '../../services/metaAdsApi.js';
 
 export const adminAdsRouter = Router();
 adminAdsRouter.use(requireAdmin);
@@ -14,6 +15,24 @@ adminAdsRouter.post(
     const { from, to } = resolveDateRange({ range: req.query.range ?? '7d', from: req.query.from, to: req.query.to });
     const count = await syncAdSpend(from, to);
     res.json({ ok: true, rowsSynced: count });
+  }),
+);
+
+// VAQTINCHALIK: Meta'ning qaysi action_type'ni haqiqiy "lead" sifatida hisoblashini
+// aniqlash uchun. To'g'ri action_type topilgach olib tashlanadi.
+adminAdsRouter.get(
+  '/debug-actions/:adId',
+  asyncHandler(async (req, res) => {
+    const { from, to } = resolveDateRange({ range: req.query.range ?? '30d' });
+    const rows = await fetchAdInsights(from, to);
+    const matching = rows.filter((r) => r.adId === req.params.adId);
+    const totals = new Map();
+    for (const row of matching) {
+      for (const action of row.rawActions ?? []) {
+        totals.set(action.action_type, (totals.get(action.action_type) ?? 0) + Number(action.value ?? 0));
+      }
+    }
+    res.json({ adId: req.params.adId, days: matching.length, actionTotals: Object.fromEntries(totals) });
   }),
 );
 
