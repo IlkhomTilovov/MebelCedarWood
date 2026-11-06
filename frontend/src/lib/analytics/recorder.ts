@@ -17,30 +17,21 @@ function flush(useBeacon = false) {
   if (buffer.length === 0) return;
   const events = buffer;
   buffer = [];
-  // eslint-disable-next-line no-console
-  console.log(
-    '[rec] flush, count=',
-    events.length,
-    'types=',
-    events.map((e) => (e as { type: number }).type),
-    'useBeacon=',
-    useBeacon,
-  );
 
   const { id: visitorId } = getOrCreateVisitorId();
   const { id: sessionId } = getOrCreateSession();
   const body = JSON.stringify({ visitorId, sessionId, events });
 
   try {
-    if (useBeacon && navigator.sendBeacon) {
-      navigator.sendBeacon(RECORDINGS_URL, new Blob([body], { type: 'application/json' }));
+    if (useBeacon && navigator.sendBeacon && navigator.sendBeacon(RECORDINGS_URL, new Blob([body], { type: 'application/json' }))) {
       return;
     }
-    fetch(RECORDINGS_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body, keepalive: true }).catch(
-      () => {
-        // tarmoq xatosi — recording yo'qoladi, asosiy sayt buzilmaydi
-      },
-    );
+    // Diqqat: `keepalive: true` ishlatilmaydi — Chrome shu bilan yuborilgan so'rovlarni
+    // 64KB bilan cheklaydi, FullSnapshot esa odatda kattaroq bo'lib, jim ravishda
+    // yo'qolib ketardi. Sahifa hali ochiq bo'lgani uchun oddiy fetch yetarli.
+    fetch(RECORDINGS_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body }).catch(() => {
+      // tarmoq xatosi — recording yo'qoladi, asosiy sayt buzilmaydi
+    });
   } catch {
     /* noop */
   }
@@ -49,18 +40,12 @@ function flush(useBeacon = false) {
 // Shu sessiyada bir marta ishga tushadi. Maxfiy ma'lumotlar (parol, forma qiymatlari)
 // hech qachon yozilmaydi — faqat sahifa tuzilishi/sichqoncha/scroll.
 export function startSessionRecording() {
-  // eslint-disable-next-line no-console
-  console.log('[rec] startSessionRecording called, stopFn already set?', !!stopFn);
   if (stopFn || Math.random() >= SAMPLING_RATE) return;
 
   import('rrweb')
     .then(({ record }) => {
-      // eslint-disable-next-line no-console
-      console.log('[rec] record() starting, readyState=', document.readyState);
       const stop = record({
         emit(event) {
-          // eslint-disable-next-line no-console
-          console.log('[rec] emit type=', event.type, 'bufferLen=', buffer.length + 1);
           buffer.push(event);
           if (buffer.length >= MAX_BUFFER_SIZE) flush();
         },
@@ -95,8 +80,6 @@ export function startSessionRecording() {
 }
 
 export function stopSessionRecording() {
-  // eslint-disable-next-line no-console
-  console.log('[rec] stopSessionRecording called, had stopFn?', !!stopFn);
   stopFn?.();
   stopFn = null;
   if (flushTimer) clearInterval(flushTimer);
