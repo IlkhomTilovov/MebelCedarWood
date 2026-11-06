@@ -37,7 +37,7 @@ app.use('/api/admin', adminAuthRouter);
 app.use('/api/admin', adminAnalyticsRouter);
 app.use('/api/admin', adminRealtimeRouter);
 app.use('/api/admin', adminExportRouter);
-app.use('/api/admin', adminAiRouter);
+app.use('/api/admin/ai', adminAiRouter);
 
 // Asosiy sayt (forma, tracking) uchun ochiq CORS — avvalgi xatti-harakat bilan bir xil,
 // shunda mavjud /api/applications oqimi hech qachon buzilmaydi.
