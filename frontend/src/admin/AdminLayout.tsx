@@ -13,6 +13,10 @@ const NAV_ITEMS = [
   { to: '/admin/exits', label: 'Chiqish sahifalari' },
   { to: '/admin/heatmaps', label: 'Heatmap' },
   { to: '/admin/recordings', label: 'Session Recording' },
+  { to: '/admin/ai-insights', label: 'AI Insights' },
+  { to: '/admin/ai-reports', label: 'AI Hisobotlar' },
+  { to: '/admin/ai-chat', label: 'AI Chat' },
+  { to: '/admin/ab-tests', label: 'A/B Testlar' },
 ];
 
 export function AdminLayout() {

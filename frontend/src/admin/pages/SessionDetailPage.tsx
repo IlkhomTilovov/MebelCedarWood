@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { adminApi } from '@/admin/adminApi';
+import { IntentBadge } from '@/admin/components/IntentBadge';
 
 interface SessionDetail {
   session_id: string;
@@ -17,6 +18,8 @@ interface SessionDetail {
   device_type: string | null;
   region: string | null;
   is_converted: boolean;
+  intent_score: number;
+  intent_label: string;
 }
 
 interface TimelineEvent {
@@ -52,9 +55,12 @@ export function SessionDetailPage() {
       <h1 className="font-heading text-2xl font-bold text-charcoal">
         Sessiya — {new Date(session.started_at).toLocaleString('uz-UZ')}
       </h1>
-      <Link to={`/admin/visitors/${session.visitor_id}`} className="text-sm text-gold hover:underline">
-        Visitor #{session.visitor_id.slice(0, 8)} profili →
-      </Link>
+      <div className="flex items-center gap-3">
+        <Link to={`/admin/visitors/${session.visitor_id}`} className="text-sm text-gold hover:underline">
+          Visitor #{session.visitor_id.slice(0, 8)} profili →
+        </Link>
+        <IntentBadge score={session.intent_score} label={session.intent_label} />
+      </div>
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
         <div className="rounded-xl border border-light-gray bg-warm-white p-4 text-sm">

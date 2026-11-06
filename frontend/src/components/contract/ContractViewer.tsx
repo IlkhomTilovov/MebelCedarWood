@@ -1,9 +1,12 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import headerImage from '@/assets/images/portfolio/kitchen-1.webp';
 import { CONTRACT_SECTIONS, CONTRACT_SUMMARY, CONTRACT_TITLE } from '@/lib/contract';
 
+const SCROLL_MILESTONES = [25, 50, 75, 90] as const;
+
 interface ContractViewerProps {
   onReachEnd: () => void;
+  onProgress?: (percent: number) => void;
 }
 
 interface IconProps {
@@ -174,11 +177,24 @@ function ContractBlocks({ blocks }: { blocks: (typeof CONTRACT_SECTIONS)[number]
   );
 }
 
-export function ContractViewer({ onReachEnd }: ContractViewerProps) {
+export function ContractViewer({ onReachEnd, onProgress }: ContractViewerProps) {
   const sentinelRef = useRef<HTMLDivElement>(null);
+  const milestoneRefs = useRef<Map<number, HTMLDivElement>>(new Map());
   const numberedSections = CONTRACT_SECTIONS.filter((s) => s.id !== 'signatures');
   const signatures = CONTRACT_SECTIONS.find((s) => s.id === 'signatures');
   const [openId, setOpenId] = useState<string | null>(numberedSections[0]?.id ?? null);
+
+  const milestoneIndices = useMemo(() => {
+    const map = new Map<number, number>();
+    for (const pct of SCROLL_MILESTONES) {
+      const idx = Math.min(
+        numberedSections.length - 1,
+        Math.max(0, Math.floor((numberedSections.length * pct) / 100) - 1),
+      );
+      map.set(idx, pct);
+    }
+    return map;
+  }, [numberedSections.length]);
 
   useEffect(() => {
     const node = sentinelRef.current;
@@ -196,6 +212,27 @@ export function ContractViewer({ onReachEnd }: ContractViewerProps) {
     observer.observe(node);
     return () => observer.disconnect();
   }, [onReachEnd]);
+
+  useEffect(() => {
+    if (!onProgress) return;
+    const nodes = Array.from(milestoneRefs.current.entries());
+    if (nodes.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          const match = nodes.find(([, el]) => el === entry.target);
+          if (match) onProgress(match[0]);
+        }
+      },
+      { threshold: 1 },
+    );
+
+    for (const [, el] of nodes) observer.observe(el);
+    return () => observer.disconnect();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [onProgress, milestoneIndices]);
 
   return (
     <div className="overflow-hidden rounded-2xl border border-light-gray bg-warm-white">
@@ -224,8 +261,18 @@ export function ContractViewer({ onReachEnd }: ContractViewerProps) {
           {numberedSections.map((section, index) => {
             const Icon = SECTION_ICONS[section.id] ?? LayersIcon;
             const isOpen = openId === section.id;
+            const milestonePercent = milestoneIndices.get(index);
             return (
-              <div key={section.id} className="overflow-hidden rounded-xl border border-light-gray bg-warm-white">
+              <div key={section.id}>
+              {milestonePercent !== undefined && (
+                <div
+                  ref={(el) => {
+                    if (el) milestoneRefs.current.set(milestonePercent, el);
+                  }}
+                  className="h-px"
+                />
+              )}
+              <div className="overflow-hidden rounded-xl border border-light-gray bg-warm-white">
                 <button
                   type="button"
                   onClick={() => setOpenId(isOpen ? null : section.id)}
@@ -248,6 +295,7 @@ export function ContractViewer({ onReachEnd }: ContractViewerProps) {
                     </div>
                   </div>
                 )}
+              </div>
               </div>
             );
           })}

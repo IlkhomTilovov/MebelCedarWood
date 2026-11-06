@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/Button';
 import { StepActions } from '@/components/layout/StepActions';
 import { furnitureCategorySchema, type FurnitureCategoryInput } from '@/lib/validation';
 import type { FurnitureCategory } from '@/lib/types';
+import { trackEvent, trackFieldErrors } from '@/lib/analytics/track';
 import { useApplicationStore } from '@/store/useApplicationStore';
 
 interface IconProps {
@@ -127,11 +128,14 @@ export function StepFurnitureType() {
 
   const onSubmit = (data: FurnitureCategoryInput) => {
     setFurnitureCategories(data.furnitureCategories);
+    trackEvent('product_select', { categories: data.furnitureCategories });
     nextStep();
   };
 
+  const onInvalid = (fieldErrors: Record<string, unknown>) => trackFieldErrors(fieldErrors, 'furniture_type');
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={handleSubmit(onSubmit, onInvalid)} className="space-y-6">
       <div className="flex items-start gap-4">
         <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gold/15 text-gold">
           <GridIcon />
@@ -175,11 +179,11 @@ export function StepFurnitureType() {
       {errors.furnitureCategories && <p className="text-sm text-red-500">{errors.furnitureCategories.message}</p>}
 
       <StepActions>
-        <Button type="button" variant="ghost" onClick={prevStep} className="w-full sm:w-auto">
+        <Button type="button" data-track="back_button" variant="ghost" onClick={prevStep} className="w-full sm:w-auto">
           <ArrowLeftIcon />
           Orqaga
         </Button>
-        <Button type="submit" className="w-full sm:w-auto">
+        <Button type="submit" data-track="next_button" className="w-full sm:w-auto">
           Keyingi
           <ArrowRightIcon />
         </Button>

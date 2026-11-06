@@ -7,6 +7,7 @@ import { StepPersonalInfo } from '@/components/form/StepPersonalInfo';
 import { StepReview } from '@/components/form/StepReview';
 import { useSeo } from '@/lib/seo';
 import { useFormFunnelTracking } from '@/lib/analytics/useFormFunnelTracking';
+import { useFormFieldTracking } from '@/lib/analytics/useFormFieldTracking';
 import { useApplicationStore } from '@/store/useApplicationStore';
 import { useConsentStore } from '@/store/useConsentStore';
 
@@ -40,6 +41,7 @@ export function ApplicationFormPage() {
   const submittedApplication = useApplicationStore((s) => s.submittedApplication);
 
   useFormFunnelTracking(currentStep, Boolean(submittedApplication));
+  useFormFieldTracking();
 
   if (!consentGiven) {
     return <Navigate to="/contract" replace />;

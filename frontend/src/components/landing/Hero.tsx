@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import heroImage from '@/assets/images/hero/hero-kitchen-2.webp';
 import heroImageMobile from '@/assets/images/hero/hero-kitchen-mobile-1.webp';
+import { useSectionViewTracking } from '@/lib/analytics/useSectionViewTracking';
 
 function ShieldIcon() {
   return (
@@ -36,8 +37,12 @@ const TRUST_ITEMS = [
 ];
 
 export function Hero() {
+  const sectionRef = useSectionViewTracking<HTMLElement>('hero_view');
   return (
-    <section className="relative overflow-hidden bg-charcoal text-warm-white lg:flex lg:min-h-[60vh] lg:items-center">
+    <section
+      ref={sectionRef}
+      className="relative overflow-hidden bg-charcoal text-warm-white lg:flex lg:min-h-[60vh] lg:items-center"
+    >
       <div className="absolute inset-0 h-full w-full">
         <img src={heroImageMobile} alt="Premium interyer" className="block h-full w-full object-cover sm:hidden" />
         <img src={heroImage} alt="Premium interyer" className="hidden h-full w-full object-cover sm:block" />

@@ -59,7 +59,7 @@ function createId(): string {
 let cachedVisitorId: string | null = null;
 let visitorIsNew = false;
 
-function getOrCreateVisitorId(): { id: string; isNew: boolean } {
+export function getOrCreateVisitorId(): { id: string; isNew: boolean } {
   if (cachedVisitorId) return { id: cachedVisitorId, isNew: visitorIsNew };
 
   try {

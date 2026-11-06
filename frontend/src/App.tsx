@@ -8,6 +8,7 @@ import { SuccessPage } from '@/pages/SuccessPage';
 import { usePageViewTracking } from '@/lib/analytics/usePageViewTracking';
 import { useScrollTracking } from '@/lib/analytics/useScrollTracking';
 import { useClickTracking } from '@/lib/analytics/useClickTracking';
+import { useExitIntentTracking } from '@/lib/analytics/useExitIntentTracking';
 
 // Admin panel kodi (recharts bilan) lazy-load qilinadi — asosiy reklama/landing
 // sahifalarining bundle hajmiga ta'sir qilmasin.
@@ -30,6 +31,10 @@ const GeographyPage = lazy(() => import('@/admin/pages/GeographyPage').then((m) 
 const ExitPagesPage = lazy(() => import('@/admin/pages/ExitPagesPage').then((m) => ({ default: m.ExitPagesPage })));
 const CatalogPage = lazy(() => import('@/admin/pages/CatalogPage').then((m) => ({ default: m.CatalogPage })));
 const ComingSoonPage = lazy(() => import('@/admin/pages/ComingSoonPage').then((m) => ({ default: m.ComingSoonPage })));
+const AiInsightsPage = lazy(() => import('@/admin/pages/AiInsightsPage').then((m) => ({ default: m.AiInsightsPage })));
+const AiReportsPage = lazy(() => import('@/admin/pages/AiReportsPage').then((m) => ({ default: m.AiReportsPage })));
+const AiChatPage = lazy(() => import('@/admin/pages/AiChatPage').then((m) => ({ default: m.AiChatPage })));
+const AbTestsPage = lazy(() => import('@/admin/pages/AbTestsPage').then((m) => ({ default: m.AbTestsPage })));
 
 function ScrollToTop() {
   const { pathname, hash } = useLocation();
@@ -50,6 +55,7 @@ function AnalyticsTracking() {
   usePageViewTracking();
   useScrollTracking();
   useClickTracking();
+  useExitIntentTracking();
   return null;
 }
 
@@ -107,6 +113,10 @@ function App() {
                         />
                       }
                     />
+                    <Route path="ai-insights" element={<AiInsightsPage />} />
+                    <Route path="ai-reports" element={<AiReportsPage />} />
+                    <Route path="ai-chat" element={<AiChatPage />} />
+                    <Route path="ab-tests" element={<AbTestsPage />} />
                   </Route>
                 </Route>
               </Routes>

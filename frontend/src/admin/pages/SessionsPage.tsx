@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { adminApi, exportUrl } from '@/admin/adminApi';
 import { DateRangeFilter } from '@/admin/components/DateRangeFilter';
+import { IntentBadge } from '@/admin/components/IntentBadge';
 import { useDateRangeFilter } from '@/admin/useDateRangeFilter';
 
 interface SessionRow {
@@ -18,6 +19,8 @@ interface SessionRow {
   device_type: string | null;
   region: string | null;
   is_converted: boolean;
+  intent_score: number;
+  intent_label: string;
 }
 
 export function SessionsPage() {
@@ -54,6 +57,7 @@ export function SessionsPage() {
               <th className="px-4 py-3">Hudud</th>
               <th className="px-4 py-3">Sahifalar</th>
               <th className="px-4 py-3">Davomiylik</th>
+              <th className="px-4 py-3">Intent</th>
               <th className="px-4 py-3">Konversiya</th>
             </tr>
           </thead>
@@ -71,12 +75,15 @@ export function SessionsPage() {
                 <td className="px-4 py-3">{s.region ?? '—'}</td>
                 <td className="px-4 py-3">{s.page_view_count}</td>
                 <td className="px-4 py-3">{s.duration_seconds ? `${Math.round(s.duration_seconds / 60)} daq` : '—'}</td>
+                <td className="px-4 py-3">
+                  <IntentBadge score={s.intent_score} label={s.intent_label} />
+                </td>
                 <td className="px-4 py-3">{s.is_converted ? '✅' : '—'}</td>
               </tr>
             ))}
             {sessions.length === 0 && (
               <tr>
-                <td colSpan={8} className="px-4 py-8 text-center text-charcoal/40">
+                <td colSpan={9} className="px-4 py-8 text-center text-charcoal/40">
                   Hozircha ma'lumot yo'q
                 </td>
               </tr>

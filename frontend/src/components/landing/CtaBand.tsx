@@ -1,5 +1,11 @@
 import { Link } from 'react-router-dom';
 import ctaImage from '@/assets/images/cta/cta-armchair-1.webp';
+import { useAbVariant } from '@/lib/analytics/useAbVariant';
+
+const CONTRACT_CTA_COPY = {
+  a: "Shartnoma bilan tanishish",
+  b: "Shartnoma shartlarini ko'rish",
+};
 
 function DocumentIcon() {
   return (
@@ -12,6 +18,8 @@ function DocumentIcon() {
 }
 
 export function CtaBand() {
+  const contractCtaVariant = useAbVariant('contract_cta_copy');
+
   return (
     <section className="mx-auto max-w-6xl px-6 py-16 md:py-24">
       <div className="grid gap-4 md:grid-cols-2">
@@ -29,7 +37,7 @@ export function CtaBand() {
             data-track="cta_band_contract_review"
             className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-gold px-6 py-3.5 text-xs font-semibold tracking-wide text-charcoal uppercase transition-colors hover:bg-[#a68a56] sm:w-auto"
           >
-            Shartnomani ko'rib chiqish
+            {CONTRACT_CTA_COPY[contractCtaVariant]}
             <span aria-hidden="true">→</span>
           </Link>
         </div>

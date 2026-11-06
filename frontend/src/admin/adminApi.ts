@@ -31,6 +31,11 @@ export const adminApi = {
     const query = params ? `?${new URLSearchParams(params).toString()}` : '';
     return request<T>(`${path}${query}`);
   },
+  post: <T>(path: string, body?: unknown, params?: Record<string, string>) => {
+    const query = params ? `?${new URLSearchParams(params).toString()}` : '';
+    return request<T>(`${path}${query}`, { method: 'POST', body: body !== undefined ? JSON.stringify(body) : undefined });
+  },
+  patch: <T>(path: string, body: unknown) => request<T>(path, { method: 'PATCH', body: JSON.stringify(body) }),
 };
 
 export function exportUrl(path: string, params?: Record<string, string>) {

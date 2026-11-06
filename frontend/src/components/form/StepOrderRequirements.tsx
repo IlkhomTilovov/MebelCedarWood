@@ -13,6 +13,7 @@ import {
   START_TIMING_OPTIONS,
 } from '@/lib/regions';
 import { orderRequirementsSchema, type OrderRequirementsInput } from '@/lib/validation';
+import { trackFieldErrors } from '@/lib/analytics/track';
 import { useApplicationStore } from '@/store/useApplicationStore';
 
 interface IconProps {
@@ -343,9 +344,11 @@ export function StepOrderRequirements() {
   ];
   const filledSummaryItems = summaryItems.filter((item) => item.value);
 
+  const onInvalid = (fieldErrors: Record<string, unknown>) => trackFieldErrors(fieldErrors, 'order_requirements');
+
   return (
     <div className="grid gap-8 lg:grid-cols-3 lg:items-start">
-      <form onSubmit={handleSubmit(onSubmit)} className="relative space-y-7 lg:col-span-2">
+      <form onSubmit={handleSubmit(onSubmit, onInvalid)} className="relative space-y-7 lg:col-span-2">
         <div className="flex items-start gap-4">
           <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gold/15 text-gold">
             <ClipboardListIcon />
@@ -418,10 +421,10 @@ export function StepOrderRequirements() {
         />
 
         <StepActions>
-          <Button type="button" variant="ghost" onClick={prevStep} className="w-full sm:w-auto">
+          <Button type="button" data-track="back_button" variant="ghost" onClick={prevStep} className="w-full sm:w-auto">
             Orqaga
           </Button>
-          <Button type="submit" className="w-full sm:w-auto">
+          <Button type="submit" data-track="next_button" className="w-full sm:w-auto">
             Keyingi
             <ArrowRightIcon />
           </Button>

@@ -21,8 +21,10 @@ const REGION_CODE_MAP = {
 
 // Taxminiy hudud/davlatni aniqlaydi va chaqiruvchiga faqat shu natijani qaytaradi —
 // xom IP manzil hech qachon qaytarilmaydi yoki boshqa joyda saqlanmaydi.
+const MAX_IP_LENGTH = 45; // to'liq IPv6 manzilining maksimal uzunligi
+
 export function resolveApproxLocation(ip) {
-  if (!ip) return { country: null, region: null };
+  if (!ip || ip.length > MAX_IP_LENGTH) return { country: null, region: null };
 
   const cleanIp = ip.replace(/^::ffff:/, '');
   const lookup = geoip.lookup(cleanIp);

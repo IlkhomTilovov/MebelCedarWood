@@ -5,6 +5,7 @@ import kitchenImage from '@/assets/images/portfolio/kitchen-1.webp';
 import livingRoomImage from '@/assets/images/portfolio/livingroom-1.webp';
 import officeImage from '@/assets/images/portfolio/office-1.webp';
 import portfolioBgImage from '@/assets/images/portfolio/portfolio-bg-1.webp';
+import { useSectionViewTracking } from '@/lib/analytics/useSectionViewTracking';
 
 type RoomCategory = 'Oshxona' | 'Yotoqxona' | 'Mehmonxona' | 'Ofis' | 'Garderob' | 'Tijorat';
 
@@ -123,13 +124,18 @@ const PAGE_SIZE = 4;
 
 export function Portfolio() {
   const [page, setPage] = useState(0);
+  const sectionRef = useSectionViewTracking<HTMLElement>('catalog_view');
 
   const pageCount = Math.max(1, Math.ceil(PROJECTS.length / PAGE_SIZE));
   const currentPage = Math.min(page, pageCount - 1);
   const visible = PROJECTS.slice(currentPage * PAGE_SIZE, currentPage * PAGE_SIZE + PAGE_SIZE);
 
   return (
-    <section id="projects" className="relative overflow-hidden bg-charcoal py-16 text-warm-white md:py-24">
+    <section
+      ref={sectionRef}
+      id="projects"
+      className="relative overflow-hidden bg-charcoal py-16 text-warm-white md:py-24"
+    >
       <img src={portfolioBgImage} alt="" className="absolute top-0 left-0 w-full" />
       <div className="absolute inset-0 bg-charcoal/45" />
       <div className="relative mx-auto max-w-6xl px-6">

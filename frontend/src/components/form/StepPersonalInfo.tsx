@@ -6,6 +6,7 @@ import { SearchableSelect } from '@/components/ui/SearchableSelect';
 import { StepActions } from '@/components/layout/StepActions';
 import { UZBEKISTAN_REGIONS } from '@/lib/regions';
 import { formatUzPhoneInput, personalInfoSchema, type PersonalInfoInput } from '@/lib/validation';
+import { trackFieldErrors } from '@/lib/analytics/track';
 import { useApplicationStore } from '@/store/useApplicationStore';
 
 function PersonIcon() {
@@ -97,8 +98,10 @@ export function StepPersonalInfo() {
     nextStep();
   };
 
+  const onInvalid = (fieldErrors: Record<string, unknown>) => trackFieldErrors(fieldErrors, 'personal_info');
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="relative space-y-6">
+    <form onSubmit={handleSubmit(onSubmit, onInvalid)} className="relative space-y-6">
       <div className="flex items-start gap-4">
         <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gold/15 text-gold">
           <PersonIcon />
@@ -173,7 +176,7 @@ export function StepPersonalInfo() {
         </div>
       </div>
       <StepActions align="end">
-        <Button type="submit" className="w-full sm:w-auto">
+        <Button type="submit" data-track="next_button" className="w-full sm:w-auto">
           Keyingi
           <ArrowRightIcon />
         </Button>

@@ -23,6 +23,7 @@ export function useFormFunnelTracking(currentStep: number, isSubmitted: boolean)
         if (!sessionStorage.getItem(FORM_START_FLAG)) {
           sessionStorage.setItem(FORM_START_FLAG, '1');
           trackEvent('form_start');
+          trackEvent('order_start');
         }
       } catch {
         /* noop */

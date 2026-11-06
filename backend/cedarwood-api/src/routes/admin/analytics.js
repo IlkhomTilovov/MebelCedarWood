@@ -3,6 +3,7 @@ import { pool } from '../../db/pool.js';
 import { asyncHandler } from '../../middleware/asyncHandler.js';
 import { requireAdmin } from '../../middleware/requireAdmin.js';
 import { resolveDateRange, previousPeriod, percentChange } from '../../services/dateRange.js';
+import { CONVERSION_SCORE_SQL, CONVERSION_SCORE_LABEL_SQL } from '../../services/conversionScore.js';
 
 export const adminAnalyticsRouter = Router();
 adminAnalyticsRouter.use(requireAdmin);
@@ -326,11 +327,13 @@ adminAnalyticsRouter.get(
     const page = Math.max(1, Number(req.query.page) || 1);
     const pageSize = 25;
     const { rows } = await pool.query(
-      `SELECT session_id, visitor_id, started_at, ended_at, duration_seconds, entry_page, exit_page,
-              page_view_count, click_count, max_scroll_depth, traffic_source, device_type, region, is_converted
-       FROM analytics_sessions
-       WHERE started_at >= $1 AND started_at < $2
-       ORDER BY started_at DESC
+      `SELECT s.session_id, s.visitor_id, s.started_at, s.ended_at, s.duration_seconds, s.entry_page, s.exit_page,
+              s.page_view_count, s.click_count, s.max_scroll_depth, s.traffic_source, s.device_type, s.region, s.is_converted,
+              (${CONVERSION_SCORE_SQL}) AS intent_score,
+              (${CONVERSION_SCORE_LABEL_SQL}) AS intent_label
+       FROM analytics_sessions s
+       WHERE s.started_at >= $1 AND s.started_at < $2
+       ORDER BY s.started_at DESC
        LIMIT $3 OFFSET $4`,
       [from, to, pageSize, (page - 1) * pageSize],
     );
@@ -341,9 +344,14 @@ adminAnalyticsRouter.get(
 adminAnalyticsRouter.get(
   '/sessions/:sessionId',
   asyncHandler(async (req, res) => {
-    const { rows: sessionRows } = await pool.query(`SELECT * FROM analytics_sessions WHERE session_id = $1`, [
-      req.params.sessionId,
-    ]);
+    const { rows: sessionRows } = await pool.query(
+      `SELECT s.*,
+              (${CONVERSION_SCORE_SQL}) AS intent_score,
+              (${CONVERSION_SCORE_LABEL_SQL}) AS intent_label
+       FROM analytics_sessions s
+       WHERE s.session_id = $1`,
+      [req.params.sessionId],
+    );
     if (sessionRows.length === 0) return res.status(404).json({ error: 'not_found' });
 
     const { rows: timeline } = await pool.query(

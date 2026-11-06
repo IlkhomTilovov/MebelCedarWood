@@ -37,6 +37,14 @@ export function trackEvent(type: AnalyticsEventType, payload: Record<string, unk
   });
 }
 
+// react-hook-form'ning `errors` obyekti — faqat maydon nomlarini yuboradi,
+// qiymat yoki xabar matnini hech qachon yubormaydi.
+export function trackFieldErrors(errors: Record<string, unknown>, stepName: string) {
+  for (const field of Object.keys(errors)) {
+    trackEvent('field_error', { field, step: stepName });
+  }
+}
+
 export function trackPageView() {
   enqueueEvent({
     type: 'page_view',
