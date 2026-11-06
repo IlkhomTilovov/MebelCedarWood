@@ -60,6 +60,10 @@ export function HeatmapPage() {
 
   const visiblePoints = clickPoints.filter((p) => p.viewport_bucket === viewport);
   const maxClicks = Math.max(1, ...visiblePoints.map((p) => p.click_count));
+  // Haqiqiy sahifa balandligi oldindan noma'lum — eng pastdagi nuqtadan picha pastroqqacha
+  // ko'rsatamiz, shunda hozircha kam ma'lumot bo'lsa ham hamma nuqta ko'rinadi.
+  const maxPointY = Math.max(0, ...visiblePoints.map((p) => p.y_bucket * COORD_BUCKET_PX));
+  const contentHeight = Math.min(IFRAME_HEIGHT, Math.max(1600, maxPointY + 400));
 
   const scrollForViewport = scrollPoints.filter((p) => p.viewport_bucket === viewport);
   const scrollByDepth = new Map(scrollForViewport.map((p) => [p.depth_bucket, p.visitor_count]));
@@ -126,40 +130,44 @@ export function HeatmapPage() {
             </p>
           ) : (
             <div
-              className="relative overflow-hidden bg-light-gray/20"
-              style={{ width: displayWidth, height: Math.min(IFRAME_HEIGHT, 1400) * scale }}
+              className="bg-light-gray/20"
+              style={{ width: displayWidth, height: Math.min(800, contentHeight * scale), overflowY: 'auto', overflowX: 'hidden' }}
             >
-              <div
-                className="absolute top-0 left-0"
-                style={{ width: refWidth, height: IFRAME_HEIGHT, transform: `scale(${scale})`, transformOrigin: 'top left' }}
-              >
-                <iframe
-                  title="heatmap-preview"
-                  src={`${SITE_ORIGIN}${page}`}
-                  width={refWidth}
-                  height={IFRAME_HEIGHT}
-                  style={{ border: 0 }}
-                  loading="lazy"
-                />
-                <div className="pointer-events-none absolute inset-0">
-                  {visiblePoints.map((p, i) => {
-                    const intensity = p.click_count / maxClicks;
-                    const size = 16 + intensity * 28;
-                    return (
-                      <div
-                        key={i}
-                        className="absolute rounded-full"
-                        style={{
-                          left: p.x_bucket * COORD_BUCKET_PX - size / 2,
-                          top: p.y_bucket * COORD_BUCKET_PX - size / 2,
-                          width: size,
-                          height: size,
-                          background: `rgba(220, 38, 38, ${0.15 + intensity * 0.55})`,
-                          boxShadow: `0 0 ${size}px rgba(220,38,38,${intensity * 0.4})`,
-                        }}
-                      />
-                    );
-                  })}
+              {/* Haqiqiy (transformsiz) balandlikdagi spacer — scroll balandligi shundan hisoblanadi,
+                  transform:scale'ga bog'liq brauzerlararo farqlardan qochish uchun. */}
+              <div className="relative" style={{ width: displayWidth, height: contentHeight * scale }}>
+                <div
+                  className="absolute top-0 left-0"
+                  style={{ width: refWidth, height: contentHeight, transform: `scale(${scale})`, transformOrigin: 'top left' }}
+                >
+                  <iframe
+                    title="heatmap-preview"
+                    src={`${SITE_ORIGIN}${page}`}
+                    width={refWidth}
+                    height={contentHeight}
+                    style={{ border: 0 }}
+                    loading="lazy"
+                  />
+                  <div className="pointer-events-none absolute inset-0">
+                    {visiblePoints.map((p, i) => {
+                      const intensity = p.click_count / maxClicks;
+                      const size = 16 + intensity * 28;
+                      return (
+                        <div
+                          key={i}
+                          className="absolute rounded-full"
+                          style={{
+                            left: p.x_bucket * COORD_BUCKET_PX - size / 2,
+                            top: p.y_bucket * COORD_BUCKET_PX - size / 2,
+                            width: size,
+                            height: size,
+                            background: `rgba(220, 38, 38, ${0.15 + intensity * 0.55})`,
+                            boxShadow: `0 0 ${size}px rgba(220,38,38,${intensity * 0.4})`,
+                          }}
+                        />
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
             </div>
