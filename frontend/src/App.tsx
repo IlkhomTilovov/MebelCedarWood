@@ -31,6 +31,7 @@ const AiReportsPage = lazy(() => import('@/admin/pages/AiReportsPage').then((m) 
 const AiChatPage = lazy(() => import('@/admin/pages/AiChatPage').then((m) => ({ default: m.AiChatPage })));
 const AbTestsPage = lazy(() => import('@/admin/pages/AbTestsPage').then((m) => ({ default: m.AbTestsPage })));
 const AdsRoiPage = lazy(() => import('@/admin/pages/AdsRoiPage').then((m) => ({ default: m.AdsRoiPage })));
+const HeatmapPage = lazy(() => import('@/admin/pages/HeatmapPage').then((m) => ({ default: m.HeatmapPage })));
 
 function ScrollToTop() {
   const { pathname, hash } = useLocation();
@@ -83,15 +84,7 @@ function App() {
                     <Route path="geography" element={<GeographyPage />} />
                     <Route path="catalog" element={<CatalogPage />} />
                     <Route path="exits" element={<ExitPagesPage />} />
-                    <Route
-                      path="heatmaps"
-                      element={
-                        <ComingSoonPage
-                          title="Heatmap"
-                          note="Click/scroll ma'lumotlari allaqachon to'planmoqda — vizual heatmap ko'rinishi keyingi bosqichda qo'shiladi."
-                        />
-                      }
-                    />
+                    <Route path="heatmaps" element={<HeatmapPage />} />
                     <Route
                       path="recordings"
                       element={
