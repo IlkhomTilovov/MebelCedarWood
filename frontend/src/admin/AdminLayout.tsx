@@ -7,6 +7,7 @@ const NAV_ITEMS = [
   { to: '/admin/sessions', label: 'Tashriflar' },
   { to: '/admin/funnel', label: 'Form Analytics' },
   { to: '/admin/campaigns', label: 'Reklama manbalari' },
+  { to: '/admin/ads-roi', label: 'Reklama ROI' },
   { to: '/admin/devices', label: 'Qurilmalar' },
   { to: '/admin/geography', label: 'Geografiya' },
   { to: '/admin/catalog', label: 'Mahsulotlar' },

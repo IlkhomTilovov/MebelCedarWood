@@ -35,6 +35,7 @@ const AiInsightsPage = lazy(() => import('@/admin/pages/AiInsightsPage').then((m
 const AiReportsPage = lazy(() => import('@/admin/pages/AiReportsPage').then((m) => ({ default: m.AiReportsPage })));
 const AiChatPage = lazy(() => import('@/admin/pages/AiChatPage').then((m) => ({ default: m.AiChatPage })));
 const AbTestsPage = lazy(() => import('@/admin/pages/AbTestsPage').then((m) => ({ default: m.AbTestsPage })));
+const AdsRoiPage = lazy(() => import('@/admin/pages/AdsRoiPage').then((m) => ({ default: m.AdsRoiPage })));
 
 function ScrollToTop() {
   const { pathname, hash } = useLocation();
@@ -91,6 +92,7 @@ function App() {
                     <Route path="visitors/:visitorId" element={<VisitorDetailPage />} />
                     <Route path="funnel" element={<FunnelPage />} />
                     <Route path="campaigns" element={<CampaignsPage />} />
+                    <Route path="ads-roi" element={<AdsRoiPage />} />
                     <Route path="devices" element={<DevicesPage />} />
                     <Route path="geography" element={<GeographyPage />} />
                     <Route path="catalog" element={<CatalogPage />} />

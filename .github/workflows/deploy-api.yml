@@ -47,9 +47,12 @@ jobs:
           ALLOWED_ORIGINS: ${{ secrets.ALLOWED_ORIGINS }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_MODEL: ${{ secrets.OPENAI_MODEL }}
+          FACEBOOK_ACCESS_TOKEN: ${{ secrets.FACEBOOK_ACCESS_TOKEN }}
+          FACEBOOK_AD_ACCOUNT_ID: ${{ secrets.FACEBOOK_AD_ACCOUNT_ID }}
+          FACEBOOK_API_VERSION: ${{ secrets.FACEBOOK_API_VERSION }}
           VPS_HOST: ${{ steps.host.outputs.value }}
         run: |
-          ssh "root@$VPS_HOST" "BOT_TOKEN='${BOT_TOKEN}' CHAT_ID='${CHAT_ID}' DATABASE_URL='${DATABASE_URL}' ADMIN_USERNAME='${ADMIN_USERNAME}' ADMIN_PASSWORD='${ADMIN_PASSWORD}' ALLOWED_ORIGINS='${ALLOWED_ORIGINS}' OPENAI_API_KEY='${OPENAI_API_KEY}' OPENAI_MODEL='${OPENAI_MODEL}' bash -s" <<'REMOTE_SCRIPT'
+          ssh "root@$VPS_HOST" "BOT_TOKEN='${BOT_TOKEN}' CHAT_ID='${CHAT_ID}' DATABASE_URL='${DATABASE_URL}' ADMIN_USERNAME='${ADMIN_USERNAME}' ADMIN_PASSWORD='${ADMIN_PASSWORD}' ALLOWED_ORIGINS='${ALLOWED_ORIGINS}' OPENAI_API_KEY='${OPENAI_API_KEY}' OPENAI_MODEL='${OPENAI_MODEL}' FACEBOOK_ACCESS_TOKEN='${FACEBOOK_ACCESS_TOKEN}' FACEBOOK_AD_ACCOUNT_ID='${FACEBOOK_AD_ACCOUNT_ID}' FACEBOOK_API_VERSION='${FACEBOOK_API_VERSION}' bash -s" <<'REMOTE_SCRIPT'
           set -euo pipefail
 
           id cedarwood >/dev/null 2>&1 || useradd -r -M -s /usr/sbin/nologin cedarwood
@@ -64,6 +67,9 @@ jobs:
           ALLOWED_ORIGINS=${ALLOWED_ORIGINS}
           OPENAI_API_KEY=${OPENAI_API_KEY}
           OPENAI_MODEL=${OPENAI_MODEL:-gpt-4o-mini}
+          FACEBOOK_ACCESS_TOKEN=${FACEBOOK_ACCESS_TOKEN}
+          FACEBOOK_AD_ACCOUNT_ID=${FACEBOOK_AD_ACCOUNT_ID}
+          FACEBOOK_API_VERSION=${FACEBOOK_API_VERSION:-v21.0}
           NODE_ENV=production
           EOF
           chmod 600 /opt/cedarwood-api/.env
@@ -90,6 +96,30 @@ jobs:
 
           [Install]
           WantedBy=multi-user.target
+          EOF
+
+          cat > /etc/systemd/system/cedarwood-ads-sync.service <<'EOF'
+          [Unit]
+          Description=CEDAR WOOD Meta Ads kunlik xarajat sinxronizatsiyasi
+
+          [Service]
+          Type=oneshot
+          User=cedarwood
+          WorkingDirectory=/opt/cedarwood-api
+          EnvironmentFile=/opt/cedarwood-api/.env
+          ExecStart=/usr/bin/node /opt/cedarwood-api/src/jobs/syncMetaAdsSpend.js
+          EOF
+
+          cat > /etc/systemd/system/cedarwood-ads-sync.timer <<'EOF'
+          [Unit]
+          Description=CEDAR WOOD Meta Ads kunlik sync jadvali
+
+          [Timer]
+          OnCalendar=*-*-* 06:00:00
+          Persistent=true
+
+          [Install]
+          WantedBy=timers.target
           EOF
 
           cat > /etc/nginx/sites-available/cedarwood-api <<'EOF'
@@ -140,6 +170,7 @@ jobs:
           systemctl daemon-reload
           systemctl enable cedarwood-api
           systemctl restart cedarwood-api
+          systemctl enable --now cedarwood-ads-sync.timer
           sleep 1
           systemctl is-active cedarwood-api
           REMOTE_SCRIPT

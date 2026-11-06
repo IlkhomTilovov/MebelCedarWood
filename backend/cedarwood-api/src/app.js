@@ -9,6 +9,7 @@ import { adminAnalyticsRouter } from './routes/admin/analytics.js';
 import { adminRealtimeRouter } from './routes/admin/realtime.js';
 import { adminExportRouter } from './routes/admin/export.js';
 import { adminAiRouter } from './routes/admin/ai.js';
+import { adminAdsRouter } from './routes/admin/ads.js';
 import { eventsRateLimiter } from './middleware/rateLimiter.js';
 
 const rawAllowedOrigins = process.env.ALLOWED_ORIGINS?.trim();
@@ -38,6 +39,7 @@ app.use('/api/admin', adminAnalyticsRouter);
 app.use('/api/admin', adminRealtimeRouter);
 app.use('/api/admin', adminExportRouter);
 app.use('/api/admin/ai', adminAiRouter);
+app.use('/api/admin/ads', adminAdsRouter);
 
 // Asosiy sayt (forma, tracking) uchun ochiq CORS — avvalgi xatti-harakat bilan bir xil,
 // shunda mavjud /api/applications oqimi hech qachon buzilmaydi.

@@ -8,7 +8,8 @@
     "start": "node index.js",
     "migrate:up": "node -r dotenv/config ./node_modules/.bin/node-pg-migrate up",
     "migrate:down": "node -r dotenv/config ./node_modules/.bin/node-pg-migrate down",
-    "seed:admin": "node -r dotenv/config src/scripts/seedAdmin.js"
+    "seed:admin": "node -r dotenv/config src/scripts/seedAdmin.js",
+    "sync:meta-ads": "node -r dotenv/config src/jobs/syncMetaAdsSpend.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
